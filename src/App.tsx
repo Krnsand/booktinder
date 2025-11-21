@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import { fetchBooks } from "./api/googleBooks";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [books, setBooks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadBooks() {
+      setLoading(true);
+      try {
+        const results = await fetchBooks("alchemised");
+        setBooks(results);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadBooks();
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      <h1>BookTinder Test</h1>
+      {loading && <p>Loading...</p>}
+      {!loading && books.map((book) => (
+        <div key={book.id}>
+          <h3>{book.volumeInfo.title}</h3>
+        </div>
+      ))}
+    </div>
+  );
 }
-
-export default App
