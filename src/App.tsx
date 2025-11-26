@@ -1,35 +1,64 @@
-import { useEffect, useState } from "react";
-import { fetchBooks } from "./api/googleBooks";
+import type { JSX } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Browse from "./pages/Browse";
+import Discover from "./pages/Discover";
+import Library from "./pages/Library";
+import SignIn from "./pages/SignIn";
+import Register from "./pages/Register";
+import Header from "./components/Header";
+import { useAuth } from "./context/AuthContext";
 
-export default function App() {
-  const [books, setBooks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+function RequireAuth({ children }: { children: JSX.Element }) {
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    async function loadBooks() {
-      setLoading(true);
-      try {
-        const results = await fetchBooks("alchemised");
-        setBooks(results);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-    loadBooks();
-  }, []);
+  if (!user) {
+    return <Navigate to="/signin" replace />;
+  }
 
   return (
     <div>
-      <h1>BookTinder Test</h1>
-      {loading && <p>Loading...</p>}
-      {!loading && books.map((book) => (
-        <div key={book.id}>
-          <h3>{book.volumeInfo.title}</h3>
-        </div>
-      ))}
+      <Header />
+      {children}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<Navigate to="/preferences" replace />} />
+        <Route
+          path="/preferences"
+          element={
+            <RequireAuth>
+              <Browse />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/discover"
+          element={
+            <RequireAuth>
+              <Discover />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/library"
+          element={
+            <RequireAuth>
+              <Library />
+            </RequireAuth>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
