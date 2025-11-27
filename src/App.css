@@ -1,42 +1,278 @@
 #root {
-  max-width: 1280px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 1.5rem 1rem 2rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.app-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.app-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.browse-page,
+.discover-page,
+.library-page,
+.book-detail-page {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.filter-section,
+.results-section {
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.genre-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.genre-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.book-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.book-item {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.book-item h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.book-item p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.auth-page {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1.5rem 1.75rem;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+  text-align: left;
+}
+
+.auth-page h1 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.auth-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.auth-form input {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font: inherit;
+}
+
+.auth-page p {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.error-message {
+  margin-top: 0.75rem;
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+
+.save-message {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #15803d;
+}
+
+.book-detail-content {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.book-detail-cover {
+  max-width: 200px;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+}
+
+.book-detail-info h1 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.book-detail-info p {
+  margin: 0.25rem 0;
+}
+
+.book-detail-description {
+  margin-top: 1rem;
+}
+
+.book-detail-description h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.book-detail-description p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+  .book-detail-content {
+    flex-direction: row;
+    align-items: flex-start;
   }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.library-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.card {
-  padding: 2em;
+.library-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  column-gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
-.read-the-docs {
-  color: #888;
+.library-card-cover {
+  width: 48px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.library-card-main {
+  flex: 1;
+}
+
+.library-card-main h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.library-card-main p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.library-card-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.status-icon {
+  font-size: 0.9rem;
+}
+
+.status-icon.heart {
+  color: #dc2626;
+}
+
+.status-icon.check {
+  color: #16a34a;
+}
+
+.library-card-menu {
+  position: relative;
+}
+
+.menu-button {
+  padding: 0.25rem 0.5rem;
+}
+
+.menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+  border-radius: 6px;
+  min-width: 120px;
+  z-index: 10;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.35rem 0.75rem;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.menu-item:hover {
+  background-color: #f3f4f6;
+}
+
+.menu-item.active {
+  font-weight: 600;
 }
