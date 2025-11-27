@@ -10,3 +10,16 @@ export async function fetchBooks(query: string) {
   const data = await response.json();
   return data.items || [];
 }
+
+export async function fetchBookById(id: string) {
+  const response = await fetch(
+    `https://www.googleapis.com/books/v1/volumes/${encodeURIComponent(id)}`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch book details");
+  }
+
+  const data = await response.json();
+  return data;
+}

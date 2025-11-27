@@ -18,6 +18,7 @@ export default function Browse() {
   const [books, setBooks] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
 
   function toggleGenre(genre: string) {
     setSelectedGenres((prev) =>
@@ -34,6 +35,7 @@ export default function Browse() {
 
     setLoading(true);
     setError(null);
+    setHasSearched(true);
 
     try {
       if (selectedGenres.length === 1) {
@@ -98,7 +100,12 @@ export default function Browse() {
         {!loading && books.length > 0 && (
           <ul className="book-list">
             {books.map((book) => (
-              <li key={book.id} className="book-item">
+              <li
+                key={book.id}
+                className="book-item"
+                onClick={() => navigate(`/book/${book.id}`)}
+                style={{ cursor: "pointer" }}
+              >
                 <h3>{book.volumeInfo?.title}</h3>
                 {book.volumeInfo?.authors && (
                   <p>{book.volumeInfo.authors.join(", ")}</p>
@@ -108,7 +115,7 @@ export default function Browse() {
           </ul>
         )}
 
-        {!loading && !error && books.length === 0 && selectedGenres.length > 0 && (
+        {!loading && !error && hasSearched && books.length === 0 && (
           <p>Inga böcker hittades för valda genrer.</p>
         )}
       </section>
