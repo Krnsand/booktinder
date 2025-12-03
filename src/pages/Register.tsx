@@ -14,12 +14,31 @@ export default function Register() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (!email || !password) {
+      setError('Enter email and password.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
     setLoading(true);
     try {
       await signUp(email, password);
       navigate('/preferences');
     } catch (err: any) {
-      setError(err.message ?? 'Failed to register');
+      const raw = err?.message ?? '';
+      let message = 'Could not create account.';
+
+      if (raw.toLowerCase().includes('password')) {
+        message = 'Password is too weak or too short.';
+      } else if (raw.toLowerCase().includes('already registered')) {
+        message = 'There is already an account with this email.';
+      }
+
+      setError(message);
     } finally {
       setLoading(false);
     }

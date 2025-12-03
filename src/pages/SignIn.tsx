@@ -14,12 +14,24 @@ export default function SignIn() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (!email || !password) {
+      setError('Enter email and password.');
+      return;
+    }
     setLoading(true);
     try {
       await signIn(email, password);
       navigate('/preferences');
     } catch (err: any) {
-      setError(err.message ?? 'Failed to sign in');
+      const raw = err?.message ?? '';
+      let message = 'Could not sign in. Check email and password.';
+
+      if (raw.includes('Invalid login credentials')) {
+        message = 'Invalid email or password.';
+      }
+
+      setError(message);
     } finally {
       setLoading(false);
     }
