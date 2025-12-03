@@ -40,6 +40,15 @@ export async function addToLibrary(params: {
   return data as LibraryItem;
 }
 
+export async function deleteLibraryItem(id: string) {
+  const { error } = await supabase
+    .from('library_items')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
+}
+
 export async function getLibrary(userId: string) {
   const { data, error } = await supabase
     .from('library_items')
