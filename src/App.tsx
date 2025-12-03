@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Browse from "./pages/Browse";
 import Discover from "./pages/Discover";
 import Library from "./pages/Library";
+import Profile from "./pages/Profile";
 import BookDetail from "./pages/BookDetail";
 import SignIn from "./pages/SignIn";
 import Register from "./pages/Register";
@@ -56,6 +57,14 @@ export default function App() {
           element={
             <RequireAuth>
               <Library />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <RequireAuth>
+              <Profile />
             </RequireAuth>
           }
         />
