@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { getLibrary, updateLibraryItem, type LibraryItem } from "../api/library";
+import { getLibrary, updateLibraryItem, deleteLibraryItem, type LibraryItem } from "../api/library";
 
 export default function Library() {
   const navigate = useNavigate();
@@ -14,19 +14,20 @@ export default function Library() {
   useEffect(() => {
     if (!user) return;
 
+    const userId = user.id;
     let isMounted = true;
 
     async function load() {
       setLoading(true);
       setError(null);
       try {
-        const data = await getLibrary(user.id);
+        const data = await getLibrary(userId);
         if (!isMounted) return;
         setItems(data);
       } catch (err: any) {
         console.error(err);
         if (!isMounted) return;
-        setError("Kunde inte hämta bibliotek.");
+        setError("Could not load library.");
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -38,6 +39,19 @@ export default function Library() {
       isMounted = false;
     };
   }, [user]);
+
+  async function removeItem(id: string) {
+    try {
+      if (!window.confirm("Are you sure?")) {
+        return;
+      }
+      await deleteLibraryItem(id);
+      setItems((prev) => prev.filter((it) => it.id !== id));
+      setOpenMenuId(null);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   async function toggleItem(id: string, field: "is_favorite" | "has_read") {
     try {
@@ -65,14 +79,11 @@ export default function Library() {
       }}
     >
       <h1>My Library / Favorites</h1>
-
-      <button onClick={goToDiscover}>Back to Discover</button>
-
-      {loading && <p>Laddar bibliotek...</p>}
+      {loading && <p>Loading library...</p>}
       {error && <p className="error-message">{error}</p>}
 
       {!loading && !error && items.length === 0 && (
-        <p>Du har inga sparade böcker ännu.</p>
+        <p>You have no saved books yet.</p>
       )}
 
       {!loading && items.length > 0 && (
@@ -137,6 +148,13 @@ export default function Library() {
                     >
                       Have Read
                     </button>
+                    <button
+                      type="button"
+                      className="menu-item remove"
+                      onClick={() => removeItem(item.id)}
+                    >
+                      Remove book
+                    </button>
                   </div>
                 )}
               </div>
@@ -144,6 +162,10 @@ export default function Library() {
           ))}
         </ul>
       )}
+
+      <div className="bottom-nav">
+        <button onClick={goToDiscover}>Back to Discover</button>
+      </div>
     </div>
   );
 }
