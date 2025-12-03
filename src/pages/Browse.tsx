@@ -1,24 +1,116 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchBooks } from "../api/googleBooks";
+import { useAuth } from "../context/AuthContext";
+import { getUserPreferences, upsertUserPreferences } from "../api/preferences";
 
 const GENRES = [
   "Fantasy",
+  "Sci-Fi",
   "Romance",
-  "Science fiction",
-  "Thriller",
-  "Mystery",
+  "Contemporary / Feelgood",
+  "Mystery / Thriller",
   "Horror",
-  "Young adult",
+  "Historical Fiction",
+  "Young Adult",
+  "Non-Fiction / Biography",
+];
+
+const MOODS = [
+  "Dark & dramatic",
+  "Light & humorous",
+  "Cozy / Feelgood",
+  "Epic & large-scale",
+  "Emotional / tearjerker",
+  "Action-packed & intense",
+  "Philosophical / thought-provoking",
+];
+
+const TROPES = [
+  "Enemies to Lovers",
+  "Found Family",
+  "The Chosen One",
+  "Morally Grey Characters",
+  "Redemption Arc",
+  "Love Triangle",
+  "Fake Dating",
+  "Prophecy / Destiny",
+  "Coming of Age",
+  "Portal Fantasy",
+  "Unreliable Narrator",
+  "Second Chance Romance",
+];
+
+const REPRESENTATION = [
+  "Female main character",
+  "Male main character",
+  "Non-binary / queer representation",
+  "LGBTQ+ romance",
+  "Multicultural representation",
+  "Neurodivergent or disability representation",
+];
+
+const AUTHORS = [
+  "Female author",
+  "Male author",
+  "Non-binary / queer author",
+  "Debut author",
+  "POC author",
+  "Award-winning author",
+];
+
+const FORMATS = [
+  "Short (<300 pages)",
+  "Medium (300–500 pages)",
+  "Long (>500 pages)",
+  "Series",
+  "Standalone",
+  "Audiobook available",
+  "Illustrated / graphic novel",
 ];
 
 export default function Browse() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-  const [books, setBooks] = useState<any[]>([]);
+  const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
+  const [selectedTropes, setSelectedTropes] = useState<string[]>([]);
+  const [selectedRepresentation, setSelectedRepresentation] = useState<string[]>([]);
+  const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
+  const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hasSearched, setHasSearched] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const userId = user.id;
+    let isMounted = true;
+
+    async function loadPreferences() {
+      try {
+        const prefs = await getUserPreferences(userId);
+        if (!isMounted || !prefs) return;
+
+        setSelectedGenres(prefs.genres ?? []);
+        setSelectedMoods(prefs.moods ?? []);
+        setSelectedTropes(prefs.tropes ?? []);
+        setSelectedRepresentation(prefs.representation ?? []);
+        setSelectedAuthors(prefs.authors ?? []);
+        setSelectedFormats(prefs.formats ?? []);
+      } catch (err) {
+        console.error(err);
+        if (!isMounted) return;
+        // keep silent in UI, preferences loading is not critical
+      }
+    }
+
+    loadPreferences();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
 
   function toggleGenre(genre: string) {
     setSelectedGenres((prev) =>
@@ -28,23 +120,77 @@ export default function Browse() {
     );
   }
 
+  function toggleMood(mood: string) {
+    setSelectedMoods((prev) =>
+      prev.includes(mood) ? prev.filter((m) => m !== mood) : [...prev, mood]
+    );
+  }
+
+  function toggleTrope(trope: string) {
+    setSelectedTropes((prev) =>
+      prev.includes(trope) ? prev.filter((t) => t !== trope) : [...prev, trope]
+    );
+  }
+
+  function toggleRepresentation(rep: string) {
+    setSelectedRepresentation((prev) =>
+      prev.includes(rep) ? prev.filter((r) => r !== rep) : [...prev, rep]
+    );
+  }
+
+  function toggleAuthor(author: string) {
+    setSelectedAuthors((prev) =>
+      prev.includes(author) ? prev.filter((a) => a !== author) : [...prev, author]
+    );
+  }
+
+  function toggleFormat(format: string) {
+    setSelectedFormats((prev) =>
+      prev.includes(format) ? prev.filter((f) => f !== format) : [...prev, format]
+    );
+  }
+
+  function buildExtraQueryPart() {
+    const parts: string[] = [];
+
+    parts.push(...selectedMoods);
+    parts.push(...selectedTropes);
+    parts.push(...selectedRepresentation);
+    parts.push(...selectedAuthors);
+    parts.push(...selectedFormats);
+
+    if (parts.length === 0) return "";
+
+    // Join with spaces so Google Books can treat them as keywords
+    return parts.join(" ");
+  }
+
   async function handleSearch() {
     if (selectedGenres.length === 0) {
-      return;
+      return [] as any[];
     }
 
     setLoading(true);
     setError(null);
-    setHasSearched(true);
 
     try {
+      const extra = buildExtraQueryPart();
+
       if (selectedGenres.length === 1) {
         const [onlyGenre] = selectedGenres;
-        const results = await fetchBooks(`subject:${onlyGenre}`);
-        setBooks(results);
+        const query = extra
+          ? `subject:${onlyGenre} ${extra}`
+          : `subject:${onlyGenre}`;
+        const results = await fetchBooks(query);
+        return results;
       } else {
         const allResults = await Promise.all(
-          selectedGenres.map((genre) => fetchBooks(`subject:${genre}`))
+          selectedGenres.map((genre) => {
+            const query = extra
+              ? `subject:${genre} ${extra}`
+              : `subject:${genre}`;
+            return fetchBooks(query);
+          })
         );
 
         const mergedById = new Map<string, any>();
@@ -58,25 +204,75 @@ export default function Browse() {
           }
         }
 
-        setBooks(Array.from(mergedById.values()));
+        return Array.from(mergedById.values());
       }
     } catch (err: any) {
       console.error(err);
       setError("Kunde inte hämta böcker. Försök igen.");
+      return [] as any[];
     } finally {
       setLoading(false);
     }
   }
 
+  async function handleStartDiscover() {
+    if (!user) {
+      navigate("/signin");
+      return;
+    }
+
+    try {
+      await upsertUserPreferences(user.id, {
+        genres: selectedGenres,
+        moods: selectedMoods,
+        tropes: selectedTropes,
+        representation: selectedRepresentation,
+        authors: selectedAuthors,
+        formats: selectedFormats,
+      });
+    } catch (err) {
+      console.error(err);
+      setError("Could not save your preferences.");
+    }
+
+    const results = await handleSearch();
+    navigate("/discover", {
+      state: {
+        books: results,
+        selectedGenres,
+        preferences: {
+          genres: selectedGenres,
+          moods: selectedMoods,
+          tropes: selectedTropes,
+          representation: selectedRepresentation,
+          authors: selectedAuthors,
+          formats: selectedFormats,
+        },
+      },
+    });
+  }
+
   return (
     <div className="browse-page">
-      <h1>Bläddra böcker</h1>
-
-      <button onClick={() => navigate("/discover")}>Go to Discover</button>
+      <h1>Preferences</h1>
 
       <section className="filter-section">
-        <h2>Genrer</h2>
+        <h2>Genres</h2>
         <div className="genre-list">
+          <label className="genre-item">
+            <input
+              type="checkbox"
+              checked={selectedGenres.length === GENRES.length}
+              onChange={() => {
+                if (selectedGenres.length === GENRES.length) {
+                  setSelectedGenres([]);
+                } else {
+                  setSelectedGenres(GENRES);
+                }
+              }}
+            />
+            <span>Select all</span>
+          </label>
           {GENRES.map((genre) => (
             <label key={genre} className="genre-item">
               <input
@@ -88,37 +284,165 @@ export default function Browse() {
             </label>
           ))}
         </div>
+      </section>
 
-        <button onClick={handleSearch} disabled={loading || selectedGenres.length === 0}>
-          {loading ? "Söker..." : "Hitta böcker"}
-        </button>
+      <section className="filter-section">
+        <h2>Mood</h2>
+        <div className="genre-list">
+          <label className="genre-item">
+            <input
+              type="checkbox"
+              checked={selectedMoods.length === MOODS.length}
+              onChange={() => {
+                if (selectedMoods.length === MOODS.length) {
+                  setSelectedMoods([]);
+                } else {
+                  setSelectedMoods(MOODS);
+                }
+              }}
+            />
+            <span>Select all</span>
+          </label>
+          {MOODS.map((mood) => (
+            <label key={mood} className="genre-item">
+              <input
+                type="checkbox"
+                checked={selectedMoods.includes(mood)}
+                onChange={() => toggleMood(mood)}
+              />
+              <span>{mood}</span>
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <section className="filter-section">
+        <h2>Tropes</h2>
+        <div className="genre-list">
+          <label className="genre-item">
+            <input
+              type="checkbox"
+              checked={selectedTropes.length === TROPES.length}
+              onChange={() => {
+                if (selectedTropes.length === TROPES.length) {
+                  setSelectedTropes([]);
+                } else {
+                  setSelectedTropes(TROPES);
+                }
+              }}
+            />
+            <span>Select all</span>
+          </label>
+          {TROPES.map((trope) => (
+            <label key={trope} className="genre-item">
+              <input
+                type="checkbox"
+                checked={selectedTropes.includes(trope)}
+                onChange={() => toggleTrope(trope)}
+              />
+              <span>{trope}</span>
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <section className="filter-section">
+        <h2>Representation</h2>
+        <div className="genre-list">
+          <label className="genre-item">
+            <input
+              type="checkbox"
+              checked={selectedRepresentation.length === REPRESENTATION.length}
+              onChange={() => {
+                if (selectedRepresentation.length === REPRESENTATION.length) {
+                  setSelectedRepresentation([]);
+                } else {
+                  setSelectedRepresentation(REPRESENTATION);
+                }
+              }}
+            />
+            <span>Select all</span>
+          </label>
+          {REPRESENTATION.map((rep) => (
+            <label key={rep} className="genre-item">
+              <input
+                type="checkbox"
+                checked={selectedRepresentation.includes(rep)}
+                onChange={() => toggleRepresentation(rep)}
+              />
+              <span>{rep}</span>
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <section className="filter-section">
+        <h2>Author</h2>
+        <div className="genre-list">
+          <label className="genre-item">
+            <input
+              type="checkbox"
+              checked={selectedAuthors.length === AUTHORS.length}
+              onChange={() => {
+                if (selectedAuthors.length === AUTHORS.length) {
+                  setSelectedAuthors([]);
+                } else {
+                  setSelectedAuthors(AUTHORS);
+                }
+              }}
+            />
+            <span>Select all</span>
+          </label>
+          {AUTHORS.map((author) => (
+            <label key={author} className="genre-item">
+              <input
+                type="checkbox"
+                checked={selectedAuthors.includes(author)}
+                onChange={() => toggleAuthor(author)}
+              />
+              <span>{author}</span>
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <section className="filter-section">
+        <h2>Format</h2>
+        <div className="genre-list">
+          <label className="genre-item">
+            <input
+              type="checkbox"
+              checked={selectedFormats.length === FORMATS.length}
+              onChange={() => {
+                if (selectedFormats.length === FORMATS.length) {
+                  setSelectedFormats([]);
+                } else {
+                  setSelectedFormats(FORMATS);
+                }
+              }}
+            />
+            <span>Select all</span>
+          </label>
+          {FORMATS.map((format) => (
+            <label key={format} className="genre-item">
+              <input
+                type="checkbox"
+                checked={selectedFormats.includes(format)}
+                onChange={() => toggleFormat(format)}
+              />
+              <span>{format}</span>
+            </label>
+          ))}
+        </div>
       </section>
 
       {error && <p className="error-message">{error}</p>}
 
-      <section className="results-section">
-        {!loading && books.length > 0 && (
-          <ul className="book-list">
-            {books.map((book) => (
-              <li
-                key={book.id}
-                className="book-item"
-                onClick={() => navigate(`/book/${book.id}`)}
-                style={{ cursor: "pointer" }}
-              >
-                <h3>{book.volumeInfo?.title}</h3>
-                {book.volumeInfo?.authors && (
-                  <p>{book.volumeInfo.authors.join(", ")}</p>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {!loading && !error && hasSearched && books.length === 0 && (
-          <p>Inga böcker hittades för valda genrer.</p>
-        )}
-      </section>
+      <div className="bottom-nav">
+        <button onClick={handleStartDiscover} disabled={loading || selectedGenres.length === 0}>
+          {loading ? "Searching..." : "Start discovering"}
+        </button>
+      </div>
     </div>
   );
 }
