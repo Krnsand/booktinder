@@ -6,6 +6,9 @@ export default function Profile() {
   const { signOut, user } = useAuth();
 
   async function handleSignOut() {
+    const confirmed = window.confirm("Are you sure you want to sign out?");
+    if (!confirmed) return;
+
     await signOut();
     navigate('/signin');
   }
@@ -15,30 +18,33 @@ export default function Profile() {
       <h1 className="page-title">Profile</h1>
       {user && <p>{user.email}</p>}
       <p>My preferences</p>
-      <button onClick={handleSignOut}>Sign out</button>
-
       <div className="bottom-nav">
-        <button
-          type="button"
-          aria-label="Library"
-          onClick={() => navigate('/library')}
-          className="icon-button"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <div className="profile-bottom-buttons">
+          <button
+            type="button"
+            aria-label="Library"
+            onClick={() => navigate('/library')}
+            className="icon-button"
           >
-            <path d="M10 2v8l3-3 3 3V2" />
-            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20" />
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M10 2v8l3-3 3 3V2" />
+              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20" />
+            </svg>
+          </button>
+          <button type="button" onClick={handleSignOut}>
+            Sign out
+          </button>
+        </div>
       </div>
     </div>
   );
