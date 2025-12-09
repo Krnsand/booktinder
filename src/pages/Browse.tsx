@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { fetchBooks } from "../api/googleBooks";
 import { useAuth } from "../context/AuthContext";
 import { getUserPreferences, upsertUserPreferences } from "../api/preferences";
+import { fetchBooksFromPreferences } from "../utils/bookSearch";
+
 
 const GENRES = [
   "Fantasy",
@@ -80,6 +82,15 @@ export default function Browse() {
   const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [openSection, setOpenSection] = useState<
+    | "genres"
+    | "mood"
+    | "tropes"
+    | "representation"
+    | "author"
+    | "format"
+    | null
+  >(null);
 
   useEffect(() => {
     if (!user) return;
@@ -101,7 +112,6 @@ export default function Browse() {
       } catch (err) {
         console.error(err);
         if (!isMounted) return;
-        // keep silent in UI, preferences loading is not critical
       }
     }
 
@@ -153,15 +163,27 @@ export default function Browse() {
   function buildExtraQueryPart() {
     const parts: string[] = [];
 
-    parts.push(...selectedMoods);
-    parts.push(...selectedTropes);
-    parts.push(...selectedRepresentation);
-    parts.push(...selectedAuthors);
-    parts.push(...selectedFormats);
+
+    if (selectedMoods.length > 0) {
+      parts.push(selectedMoods[0]);
+    }
+
+    if (selectedTropes.length > 0) {
+      parts.push(selectedTropes[0]);
+    }
+
+    if (selectedRepresentation.length > 0) {
+      parts.push(selectedRepresentation[0]);
+    }
+
+    if (selectedFormats.length > 0) {
+      parts.push(selectedFormats[0]);
+    } else if (selectedAuthors.length > 0) {
+      parts.push(selectedAuthors[0]);
+    }
 
     if (parts.length === 0) return "";
 
-    // Join with spaces so Google Books can treat them as keywords
     return parts.join(" ");
   }
 
@@ -208,7 +230,7 @@ export default function Browse() {
       }
     } catch (err: any) {
       console.error(err);
-      setError("Kunde inte hämta böcker. Försök igen.");
+      setError("Could not fetch books. Try again.");
       return [] as any[];
     } finally {
       setLoading(false);
@@ -221,44 +243,45 @@ export default function Browse() {
       return;
     }
 
-    try {
-      await upsertUserPreferences(user.id, {
-        genres: selectedGenres,
-        moods: selectedMoods,
-        tropes: selectedTropes,
-        representation: selectedRepresentation,
-        authors: selectedAuthors,
-        formats: selectedFormats,
-      });
-    } catch (err) {
-      console.error(err);
-      setError("Could not save your preferences.");
-    }
+ const preferences = {
+    genres: selectedGenres,
+    moods: selectedMoods,
+    tropes: selectedTropes,
+    representation: selectedRepresentation,
+    authors: selectedAuthors,
+    formats: selectedFormats,
+  };
 
-    const results = await handleSearch();
-    navigate("/discover", {
-      state: {
-        books: results,
-        selectedGenres,
-        preferences: {
-          genres: selectedGenres,
-          moods: selectedMoods,
-          tropes: selectedTropes,
-          representation: selectedRepresentation,
-          authors: selectedAuthors,
-          formats: selectedFormats,
-        },
-      },
-    });
+  try {
+    await upsertUserPreferences(user.id, preferences);
+  } catch (err) {
+    console.error(err);
+    setError("Could not save your preferences.");
   }
+
+  const results = await fetchBooksFromPreferences(preferences);
+
+  navigate("/discover", {
+    state: { books: results, preferences },
+  });
+}
 
   return (
     <div className="browse-page">
       <h1>Preferences</h1>
 
       <section className="filter-section">
-        <h2>Genres</h2>
-        <div className="genre-list">
+        <button
+          type="button"
+          className="filter-dropdown-toggle"
+          onClick={() =>
+            setOpenSection((prev) => (prev === "genres" ? null : "genres"))
+          }
+        >
+          Genres
+        </button>
+        {openSection === "genres" && (
+          <div className="genre-list">
           <label className="genre-item">
             <input
               type="checkbox"
@@ -283,12 +306,22 @@ export default function Browse() {
               <span>{genre}</span>
             </label>
           ))}
-        </div>
+          </div>
+        )}
       </section>
 
       <section className="filter-section">
-        <h2>Mood</h2>
-        <div className="genre-list">
+        <button
+          type="button"
+          className="filter-dropdown-toggle"
+          onClick={() =>
+            setOpenSection((prev) => (prev === "mood" ? null : "mood"))
+          }
+        >
+          Mood
+        </button>
+        {openSection === "mood" && (
+          <div className="genre-list">
           <label className="genre-item">
             <input
               type="checkbox"
@@ -313,12 +346,22 @@ export default function Browse() {
               <span>{mood}</span>
             </label>
           ))}
-        </div>
+          </div>
+        )}
       </section>
 
       <section className="filter-section">
-        <h2>Tropes</h2>
-        <div className="genre-list">
+        <button
+          type="button"
+          className="filter-dropdown-toggle"
+          onClick={() =>
+            setOpenSection((prev) => (prev === "tropes" ? null : "tropes"))
+          }
+        >
+          Tropes
+        </button>
+        {openSection === "tropes" && (
+          <div className="genre-list">
           <label className="genre-item">
             <input
               type="checkbox"
@@ -343,12 +386,24 @@ export default function Browse() {
               <span>{trope}</span>
             </label>
           ))}
-        </div>
+          </div>
+        )}
       </section>
 
       <section className="filter-section">
-        <h2>Representation</h2>
-        <div className="genre-list">
+        <button
+          type="button"
+          className="filter-dropdown-toggle"
+          onClick={() =>
+            setOpenSection((prev) =>
+              prev === "representation" ? null : "representation"
+            )
+          }
+        >
+          Representation
+        </button>
+        {openSection === "representation" && (
+          <div className="genre-list">
           <label className="genre-item">
             <input
               type="checkbox"
@@ -373,12 +428,22 @@ export default function Browse() {
               <span>{rep}</span>
             </label>
           ))}
-        </div>
+          </div>
+        )}
       </section>
 
       <section className="filter-section">
-        <h2>Author</h2>
-        <div className="genre-list">
+        <button
+          type="button"
+          className="filter-dropdown-toggle"
+          onClick={() =>
+            setOpenSection((prev) => (prev === "author" ? null : "author"))
+          }
+        >
+          Author
+        </button>
+        {openSection === "author" && (
+          <div className="genre-list">
           <label className="genre-item">
             <input
               type="checkbox"
@@ -403,12 +468,22 @@ export default function Browse() {
               <span>{author}</span>
             </label>
           ))}
-        </div>
+          </div>
+        )}
       </section>
 
       <section className="filter-section">
-        <h2>Format</h2>
-        <div className="genre-list">
+        <button
+          type="button"
+          className="filter-dropdown-toggle"
+          onClick={() =>
+            setOpenSection((prev) => (prev === "format" ? null : "format"))
+          }
+        >
+          Format
+        </button>
+        {openSection === "format" && (
+          <div className="genre-list">
           <label className="genre-item">
             <input
               type="checkbox"
@@ -433,7 +508,8 @@ export default function Browse() {
               <span>{format}</span>
             </label>
           ))}
-        </div>
+          </div>
+        )}
       </section>
 
       {error && <p className="error-message">{error}</p>}
