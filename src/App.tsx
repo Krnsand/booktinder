@@ -7,6 +7,7 @@ import Profile from "./pages/Profile";
 import BookDetail from "./pages/BookDetail";
 import SignIn from "./pages/SignIn";
 import Register from "./pages/Register";
+import Home from "./pages/Home";
 import Header from "./components/Header";
 import { useAuth } from "./context/AuthContext";
 
@@ -35,7 +36,7 @@ export default function App() {
       <Routes>
         <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Navigate to="/preferences" replace />} />
+        <Route path="/" element={<Home />} />
         <Route
           path="/preferences"
           element={
