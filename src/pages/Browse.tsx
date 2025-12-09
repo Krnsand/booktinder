@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchBooks } from "../api/googleBooks";
 import { useAuth } from "../context/AuthContext";
 import { getUserPreferences, upsertUserPreferences } from "../api/preferences";
 import { fetchBooksFromPreferences } from "../utils/bookSearch";
@@ -160,111 +159,38 @@ export default function Browse() {
     );
   }
 
-  function buildExtraQueryPart() {
-    const parts: string[] = [];
-
-
-    if (selectedMoods.length > 0) {
-      parts.push(selectedMoods[0]);
-    }
-
-    if (selectedTropes.length > 0) {
-      parts.push(selectedTropes[0]);
-    }
-
-    if (selectedRepresentation.length > 0) {
-      parts.push(selectedRepresentation[0]);
-    }
-
-    if (selectedFormats.length > 0) {
-      parts.push(selectedFormats[0]);
-    } else if (selectedAuthors.length > 0) {
-      parts.push(selectedAuthors[0]);
-    }
-
-    if (parts.length === 0) return "";
-
-    return parts.join(" ");
-  }
-
-  async function handleSearch() {
-    if (selectedGenres.length === 0) {
-      return [] as any[];
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const extra = buildExtraQueryPart();
-
-      if (selectedGenres.length === 1) {
-        const [onlyGenre] = selectedGenres;
-        const query = extra
-          ? `subject:${onlyGenre} ${extra}`
-          : `subject:${onlyGenre}`;
-        const results = await fetchBooks(query);
-        return results;
-      } else {
-        const allResults = await Promise.all(
-          selectedGenres.map((genre) => {
-            const query = extra
-              ? `subject:${genre} ${extra}`
-              : `subject:${genre}`;
-            return fetchBooks(query);
-          })
-        );
-
-        const mergedById = new Map<string, any>();
-
-        for (const resultList of allResults) {
-          for (const book of resultList) {
-            if (!book?.id) continue;
-            if (!mergedById.has(book.id)) {
-              mergedById.set(book.id, book);
-            }
-          }
-        }
-
-        return Array.from(mergedById.values());
-      }
-    } catch (err: any) {
-      console.error(err);
-      setError("Could not fetch books. Try again.");
-      return [] as any[];
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function handleStartDiscover() {
     if (!user) {
       navigate("/signin");
       return;
     }
 
- const preferences = {
-    genres: selectedGenres,
-    moods: selectedMoods,
-    tropes: selectedTropes,
-    representation: selectedRepresentation,
-    authors: selectedAuthors,
-    formats: selectedFormats,
-  };
+    const preferences = {
+      genres: selectedGenres,
+      moods: selectedMoods,
+      tropes: selectedTropes,
+      representation: selectedRepresentation,
+      authors: selectedAuthors,
+      formats: selectedFormats,
+    };
 
-  try {
-    await upsertUserPreferences(user.id, preferences);
-  } catch (err) {
-    console.error(err);
-    setError("Could not save your preferences.");
+    try {
+      setLoading(true);
+
+      await upsertUserPreferences(user.id, preferences);
+
+      const results = await fetchBooksFromPreferences(preferences);
+
+      navigate("/discover", {
+        state: { books: results, preferences },
+      });
+    } catch (err) {
+      console.error(err);
+      setError("Could not save your preferences.");
+    } finally {
+      setLoading(false);
+    }
   }
-
-  const results = await fetchBooksFromPreferences(preferences);
-
-  navigate("/discover", {
-    state: { books: results, preferences },
-  });
-}
 
   return (
     <div className="browse-page">
