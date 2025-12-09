@@ -10,6 +10,7 @@ export default function Library() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [sortMode, setSortMode] = useState<"none" | "alpha" | "favorites" | "has_read">("none");
 
   useEffect(() => {
     if (!user) return;
@@ -69,6 +70,30 @@ export default function Library() {
     navigate("/discover");
   }
 
+  let displayedItems = [...items];
+
+  if (sortMode === "alpha") {
+    displayedItems.sort((a, b) => {
+      const titleA = (a.title ?? "").toLowerCase();
+      const titleB = (b.title ?? "").toLowerCase();
+      if (titleA < titleB) return -1;
+      if (titleA > titleB) return 1;
+      return 0;
+    });
+  } else if (sortMode === "favorites") {
+    displayedItems.sort((a, b) => {
+      const favA = a.is_favorite ? 1 : 0;
+      const favB = b.is_favorite ? 1 : 0;
+      return favB - favA; // favorites first
+    });
+  } else if (sortMode === "has_read") {
+    displayedItems.sort((a, b) => {
+      const readA = a.has_read ? 1 : 0;
+      const readB = b.has_read ? 1 : 0;
+      return readB - readA; // read first
+    });
+  }
+
   return (
     <div
       className="library-page"
@@ -79,6 +104,30 @@ export default function Library() {
       }}
     >
       <h1>My Library / Favorites</h1>
+      {!loading && !error && items.length > 0 && (
+        <div className="library-sort">
+          <label>
+            Sort by:{" "}
+            <select
+              value={sortMode}
+              onChange={(e) =>
+                setSortMode(
+                  e.target.value as
+                    | "none"
+                    | "alpha"
+                    | "favorites"
+                    | "has_read"
+                )
+              }
+            >
+              <option value="none">Clear filter</option>
+              <option value="alpha">Alphabetical (title)</option>
+              <option value="favorites">Favorites</option>
+              <option value="has_read">Has read</option>
+            </select>
+          </label>
+        </div>
+      )}
       {loading && <p>Loading library...</p>}
       {error && <p className="error-message">{error}</p>}
 
@@ -88,7 +137,7 @@ export default function Library() {
 
       {!loading && items.length > 0 && (
         <ul className="library-list">
-          {items.map((item) => (
+          {displayedItems.map((item) => (
             <li
               key={item.id}
               className="library-card"
