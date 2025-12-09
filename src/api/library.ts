@@ -60,6 +60,18 @@ export async function getLibrary(userId: string) {
   return (data ?? []) as LibraryItem[];
 }
 
+export async function isBookInLibrary(userId: string, googleVolumeId: string) {
+  const { data, error } = await supabase
+    .from('library_items')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('google_volume_id', googleVolumeId)
+    .limit(1);
+
+  if (error) throw error;
+  return (data ?? []).length > 0;
+}
+
 export async function updateLibraryItem(id: string, updates: Partial<Pick<LibraryItem, 'is_favorite' | 'has_read'>>) {
   const { data, error } = await supabase
     .from('library_items')
