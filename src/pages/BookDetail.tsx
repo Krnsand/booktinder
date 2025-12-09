@@ -164,7 +164,7 @@ export default function BookDetail() {
         )}
 
         <div className="book-detail-info">
-          <h1>{info.title ?? "Title missing"}</h1>
+          <h1 className="page-title">{info.title ?? "Title missing"}</h1>
           {info.authors && <p>Authors: {info.authors.join(", ")}</p>}
           {info.publishedDate && <p>Published date: {info.publishedDate}</p>}
 

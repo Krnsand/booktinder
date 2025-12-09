@@ -12,7 +12,7 @@ export default function Profile() {
 
   return (
     <div className="profile-page">
-      <h1>Profile</h1>
+      <h1 className="page-title">Profile</h1>
       {user && <p>{user.email}</p>}
       <p>My preferences</p>
       <button onClick={handleSignOut}>Sign out</button>

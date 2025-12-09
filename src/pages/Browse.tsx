@@ -268,7 +268,7 @@ export default function Browse() {
 
   return (
     <div className="browse-page">
-      <h1>Preferences</h1>
+      <h1 className="page-title">Preferences</h1>
 
       <section className="filter-section">
         <button

@@ -103,7 +103,7 @@ export default function Library() {
         }
       }}
     >
-      <h1>My Library / Favorites</h1>
+      <h1 className="page-title">My Library</h1>
       {!loading && !error && items.length > 0 && (
         <div className="library-sort">
           <label>

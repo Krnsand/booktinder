@@ -84,7 +84,7 @@ export default function Discover() {
 
   return (
     <div className="discover-page">
-      <h1>Discover</h1>
+      <h1 className="page-title">Discover</h1>
 
       <section className="results-section">
         {loading ? (
@@ -114,8 +114,6 @@ export default function Discover() {
         ) : (
           <p>No books to show. Go back to preferences.</p>
         )}
-
-        {saveMessage && <p className="success-message">{saveMessage}</p>}
       </section>
 
       {saveMessage && (
