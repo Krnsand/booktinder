@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Header() {
@@ -6,13 +6,40 @@ export default function Header() {
   const navigate = useNavigate();
   const initial = user?.email?.[0]?.toUpperCase() ?? '?';
 
+  const location = useLocation();
+  const isNotPreferencesPage = location.pathname !== '/preferences';
+
   return (
     <header className="app-header">
+      <div className="header-left">
+        {isNotPreferencesPage && (
+          <button
+            type="button"
+            onClick={() => navigate('/preferences')}
+            aria-label="Go to preferences"
+            className="icon-button"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14 17H5" />
+              <path d="M19 7h-9" />
+              <circle cx="17" cy="17" r="3" />
+              <circle cx="7" cy="7" r="3" />
+            </svg>
+          </button>
+        )}
+      </div>
       <h1 className="app-title">Bookify</h1>
       <nav className="app-nav">
-        {/* <button onClick={() => navigate('/preferences')}>Preferences</button>
-        <button onClick={() => navigate('/discover')}>Discover</button>
-        <button onClick={() => navigate('/library')}>Library</button> */}
         <button
           className="profile-icon-button"
           aria-label="Profile"
