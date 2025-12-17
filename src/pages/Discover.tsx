@@ -11,13 +11,32 @@ export default function Discover() {
   const location = useLocation();
   const { user } = useAuth();
 
-  const locationState = (location.state as { books?: any[]; currentIndex?: number }) || {};
+  const locationState = (location.state as { 
+    books?: any[]; 
+    currentIndex?: number;
+    preferences?: {
+      genres?: string[];
+      moods?: string[];
+      tropes?: string[];
+      representation?: string[];
+      authors?: string[];
+      formats?: string[];
+  };
+ }) || {};
 
   const [books, setBooks] = useState(locationState.books ?? []);
   const [currentIndex, setCurrentIndex] = useState(locationState.currentIndex ?? 0);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [preferences, setPreferences] = useState<{
+  genres?: string[];
+  moods?: string[];
+  tropes?: string[];
+  representation?: string[];
+  authors?: string[];
+  formats?: string[];
+} | null>(locationState.preferences ?? null);
 
   const currentBook = books[currentIndex] ?? null;
   const currentCoverUrl = currentBook
@@ -44,24 +63,38 @@ export default function Discover() {
       })()
     : undefined;
 
-  useEffect(() => {
-    async function load() {
-      if (!user) return;
-      if (locationState.books) return; 
+ useEffect(() => {
+  async function load() {
+    if (!user) return;
+    if (locationState.books) return;
 
-      setLoading(true);
+    setLoading(true);
 
-      const prefs = await getUserPreferences(user.id);
-      if (!prefs) return;
-
-      const results = await fetchBooksFromPreferences(prefs);
-      setBooks(results);
-
+    const prefs =
+      locationState.preferences ?? (await getUserPreferences(user.id));
+    if (!prefs) {
       setLoading(false);
+      return;
     }
 
-    load();
-  }, [user]);
+      // store them for later use in handleSaveCurrent
+    setPreferences({
+      genres: prefs.genres ?? [],
+      moods: prefs.moods ?? [],
+      tropes: prefs.tropes ?? [],
+      representation: prefs.representation ?? [],
+      authors: prefs.authors ?? [],
+      formats: prefs.formats ?? [],
+    });
+
+    const results = await fetchBooksFromPreferences(prefs);
+    setBooks(results);
+
+    setLoading(false);
+  }
+
+  load();
+}, [user]);
 
   function goToLibrary() {
     navigate("/library");
@@ -106,13 +139,17 @@ export default function Discover() {
         return;
       }
 
-      await addToLibrary({
-        userId: user.id,
-        googleVolumeId: currentBook.id,
-        title: info.title,
-        authors: info.authors,
-        thumbnail: coverUrl,
-      });
+    await addToLibrary({
+  userId: user.id,
+  googleVolumeId: currentBook.id,
+  title: info.title,
+  authors: info.authors,
+  thumbnail: coverUrl,
+  tropes: preferences?.tropes,
+  representation: preferences?.representation,
+  formats: preferences?.formats,
+  moods: preferences?.moods,
+});
 
       showNextBook();
       setSaveMessage("Book saved to your library.");
