@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { fetchBookById } from "../api/googleBooks";
+import { fetchBookById, getOpenLibraryCover } from "../api/googleBooks";
 import { useAuth } from "../context/AuthContext";
 import { addToLibrary, isBookInLibrary } from "../api/library";
 
@@ -90,8 +90,23 @@ export default function BookDetail() {
   }
 
   const info = book.volumeInfo ?? {};
+  const identifiers = (info as any).industryIdentifiers as
+    | { type: string; identifier: string }[]
+    | undefined;
+
+  let isbn: string | undefined;
+  if (Array.isArray(identifiers)) {
+    const isbn13 = identifiers.find((id) => id.type === "ISBN_13");
+    const isbn10 = identifiers.find((id) => id.type === "ISBN_10");
+    isbn = isbn13?.identifier || isbn10?.identifier;
+  }
+
+  const imgLinks = info.imageLinks ?? {};
   const image =
-    info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || undefined;
+    (isbn ? getOpenLibraryCover(isbn) : undefined) ||
+    imgLinks.thumbnail ||
+    imgLinks.smallThumbnail ||
+    undefined;
 
   const discoverState = (location.state as { books?: any[]; currentIndex?: number }) || {};
   const discoverBooks = discoverState.books ?? [];

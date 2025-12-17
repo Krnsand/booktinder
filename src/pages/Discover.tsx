@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { addToLibrary, isBookInLibrary } from "../api/library";
+import { getOpenLibraryCover } from "../api/googleBooks";
 import { getUserPreferences } from "../api/preferences";
 import { fetchBooksFromPreferences } from "../utils/bookSearch";
 
@@ -19,6 +20,29 @@ export default function Discover() {
   const [loading, setLoading] = useState(false);
 
   const currentBook = books[currentIndex] ?? null;
+  const currentCoverUrl = currentBook
+    ? (() => {
+        const info = currentBook.volumeInfo ?? {};
+        const identifiers = (info as any).industryIdentifiers as
+          | { type: string; identifier: string }[]
+          | undefined;
+
+        let isbn: string | undefined;
+        if (Array.isArray(identifiers)) {
+          const isbn13 = identifiers.find((id) => id.type === "ISBN_13");
+          const isbn10 = identifiers.find((id) => id.type === "ISBN_10");
+          isbn = isbn13?.identifier || isbn10?.identifier;
+        }
+
+        const img = info.imageLinks ?? {};
+        return (
+          (isbn ? getOpenLibraryCover(isbn) : undefined) ||
+          img.thumbnail ||
+          img.smallThumbnail ||
+          undefined
+        );
+      })()
+    : undefined;
 
   useEffect(() => {
     async function load() {
@@ -56,7 +80,23 @@ export default function Discover() {
     try {
       setSaving(true);
       const info = currentBook.volumeInfo ?? {};
+      const identifiers = (info as any).industryIdentifiers as
+        | { type: string; identifier: string }[]
+        | undefined;
+
+      let isbn: string | undefined;
+      if (Array.isArray(identifiers)) {
+        const isbn13 = identifiers.find((id) => id.type === "ISBN_13");
+        const isbn10 = identifiers.find((id) => id.type === "ISBN_10");
+        isbn = isbn13?.identifier || isbn10?.identifier;
+      }
+
       const img = info.imageLinks ?? {};
+      const coverUrl =
+        (isbn ? getOpenLibraryCover(isbn) : undefined) ||
+        img.thumbnail ||
+        img.smallThumbnail ||
+        undefined;
 
       const alreadySaved = await isBookInLibrary(user.id, currentBook.id);
       if (alreadySaved) {
@@ -71,7 +111,7 @@ export default function Discover() {
         googleVolumeId: currentBook.id,
         title: info.title,
         authors: info.authors,
-        thumbnail: img.thumbnail || img.smallThumbnail,
+        thumbnail: coverUrl,
       });
 
       showNextBook();
@@ -99,9 +139,9 @@ export default function Discover() {
             }
             style={{ cursor: "pointer" }}
           >
-            {currentBook.volumeInfo?.imageLinks?.thumbnail && (
+            {currentCoverUrl && (
               <img
-                src={currentBook.volumeInfo.imageLinks.thumbnail}
+                src={currentCoverUrl}
                 alt={currentBook.volumeInfo.title}
                 className="discover-book-cover"
               />
