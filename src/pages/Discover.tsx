@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { addToLibrary, isBookInLibrary } from "../api/library";
+import { getOpenLibraryCover } from "../api/googleBooks";
 import { getUserPreferences } from "../api/preferences";
 import { fetchBooksFromPreferences } from "../utils/bookSearch";
 
@@ -10,34 +11,90 @@ export default function Discover() {
   const location = useLocation();
   const { user } = useAuth();
 
-  const locationState = (location.state as { books?: any[]; currentIndex?: number }) || {};
+  const locationState = (location.state as { 
+    books?: any[]; 
+    currentIndex?: number;
+    preferences?: {
+      genres?: string[];
+      moods?: string[];
+      tropes?: string[];
+      representation?: string[];
+      authors?: string[];
+      formats?: string[];
+  };
+ }) || {};
 
   const [books, setBooks] = useState(locationState.books ?? []);
   const [currentIndex, setCurrentIndex] = useState(locationState.currentIndex ?? 0);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [preferences, setPreferences] = useState<{
+  genres?: string[];
+  moods?: string[];
+  tropes?: string[];
+  representation?: string[];
+  authors?: string[];
+  formats?: string[];
+} | null>(locationState.preferences ?? null);
 
   const currentBook = books[currentIndex] ?? null;
+  const currentCoverUrl = currentBook
+    ? (() => {
+        const info = currentBook.volumeInfo ?? {};
+        const identifiers = (info as any).industryIdentifiers as
+          | { type: string; identifier: string }[]
+          | undefined;
 
-  useEffect(() => {
-    async function load() {
-      if (!user) return;
-      if (locationState.books) return; 
+        let isbn: string | undefined;
+        if (Array.isArray(identifiers)) {
+          const isbn13 = identifiers.find((id) => id.type === "ISBN_13");
+          const isbn10 = identifiers.find((id) => id.type === "ISBN_10");
+          isbn = isbn13?.identifier || isbn10?.identifier;
+        }
 
-      setLoading(true);
+        const img = info.imageLinks ?? {};
+        return (
+          (isbn ? getOpenLibraryCover(isbn) : undefined) ||
+          img.thumbnail ||
+          img.smallThumbnail ||
+          undefined
+        );
+      })()
+    : undefined;
 
-      const prefs = await getUserPreferences(user.id);
-      if (!prefs) return;
+ useEffect(() => {
+  async function load() {
+    if (!user) return;
+    if (locationState.books) return;
 
-      const results = await fetchBooksFromPreferences(prefs);
-      setBooks(results);
+    setLoading(true);
 
+    const prefs =
+      locationState.preferences ?? (await getUserPreferences(user.id));
+    if (!prefs) {
       setLoading(false);
+      return;
     }
 
-    load();
-  }, [user]);
+      // store them for later use in handleSaveCurrent
+    setPreferences({
+      genres: prefs.genres ?? [],
+      moods: prefs.moods ?? [],
+      tropes: prefs.tropes ?? [],
+      representation: prefs.representation ?? [],
+      authors: prefs.authors ?? [],
+      formats: prefs.formats ?? [],
+    });
+
+    const results = await fetchBooksFromPreferences(prefs);
+    setBooks(results);
+
+    setLoading(false);
+  }
+
+  load();
+}, [user]);
 
   function goToLibrary() {
     navigate("/library");
@@ -56,7 +113,23 @@ export default function Discover() {
     try {
       setSaving(true);
       const info = currentBook.volumeInfo ?? {};
+      const identifiers = (info as any).industryIdentifiers as
+        | { type: string; identifier: string }[]
+        | undefined;
+
+      let isbn: string | undefined;
+      if (Array.isArray(identifiers)) {
+        const isbn13 = identifiers.find((id) => id.type === "ISBN_13");
+        const isbn10 = identifiers.find((id) => id.type === "ISBN_10");
+        isbn = isbn13?.identifier || isbn10?.identifier;
+      }
+
       const img = info.imageLinks ?? {};
+      const coverUrl =
+        (isbn ? getOpenLibraryCover(isbn) : undefined) ||
+        img.thumbnail ||
+        img.smallThumbnail ||
+        undefined;
 
       const alreadySaved = await isBookInLibrary(user.id, currentBook.id);
       if (alreadySaved) {
@@ -66,13 +139,17 @@ export default function Discover() {
         return;
       }
 
-      await addToLibrary({
-        userId: user.id,
-        googleVolumeId: currentBook.id,
-        title: info.title,
-        authors: info.authors,
-        thumbnail: img.thumbnail || img.smallThumbnail,
-      });
+    await addToLibrary({
+  userId: user.id,
+  googleVolumeId: currentBook.id,
+  title: info.title,
+  authors: info.authors,
+  thumbnail: coverUrl,
+  tropes: preferences?.tropes,
+  representation: preferences?.representation,
+  formats: preferences?.formats,
+  moods: preferences?.moods,
+});
 
       showNextBook();
       setSaveMessage("Book saved to your library.");
@@ -99,9 +176,9 @@ export default function Discover() {
             }
             style={{ cursor: "pointer" }}
           >
-            {currentBook.volumeInfo?.imageLinks?.thumbnail && (
+            {currentCoverUrl && (
               <img
-                src={currentBook.volumeInfo.imageLinks.thumbnail}
+                src={currentCoverUrl}
                 alt={currentBook.volumeInfo.title}
                 className="discover-book-cover"
               />

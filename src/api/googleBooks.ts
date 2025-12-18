@@ -23,3 +23,7 @@ export async function fetchBookById(id: string) {
   const data = await response.json();
   return data;
 }
+
+export function getOpenLibraryCover(isbn: string): string {
+  return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+}

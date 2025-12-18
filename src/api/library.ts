@@ -10,6 +10,10 @@ export interface LibraryItem {
   is_favorite: boolean;
   has_read: boolean;
   created_at: string;
+  tropes?: string[] | null;
+  representation?: string[] | null;
+  moods?: string[] | null;
+  formats?: string[] | null;
 }
 
 export async function addToLibrary(params: {
@@ -18,8 +22,12 @@ export async function addToLibrary(params: {
   title: string | undefined;
   authors: string[] | undefined;
   thumbnail: string | undefined;
-}) {
-  const { userId, googleVolumeId, title, authors, thumbnail } = params;
+  tropes?: string[] | undefined;
+  representation?: string[] | undefined;
+  moods?: string[] | undefined;
+  formats?: string[] | undefined;
+  }) {
+  const { userId, googleVolumeId, title, authors, thumbnail, tropes, representation, moods, formats, } = params;
 
   const { data, error } = await supabase
     .from('library_items')
@@ -30,6 +38,10 @@ export async function addToLibrary(params: {
         title: title ?? null,
         authors: authors ?? null,
         thumbnail: thumbnail ?? null,
+        tropes: tropes ?? null,
+        representation: representation ?? null,
+        moods: moods ?? null,
+        formats: formats ?? null,
       },
       { onConflict: 'user_id,google_volume_id' }
     )
