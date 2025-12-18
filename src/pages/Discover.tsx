@@ -74,45 +74,45 @@ export default function Discover() {
       })()
     : undefined;
 
-  useEffect(() => {
-    async function load() {
-      if (!user) return;
-      if (locationState.books) return;
+  async function loadRecommendations() {
+    if (!user) return;
+    if (locationState.books) return;
 
-      setLoading(true);
-      setLoadError(null);
+    setLoading(true);
+    setLoadError(null);
 
-      try {
-        const prefs =
-          locationState.preferences ?? (await getUserPreferences(user.id));
-        if (!prefs) {
-          setLoading(false);
-          return;
-        }
-
-        setPreferences({
-          genres: prefs.genres ?? [],
-          moods: prefs.moods ?? [],
-          tropes: prefs.tropes ?? [],
-          representation: prefs.representation ?? [],
-          authors: prefs.authors ?? [],
-          formats: prefs.formats ?? [],
-        });
-
-        const results = await fetchBooksFromPreferences(prefs);
-        setBooks(results);
-      } catch (err) {
-        console.error("Failed to load recommended books", err);
-        setLoadError(
-          "Could not load recommended books right now. Please try again later."
-        );
-        setBooks([]);
-      } finally {
+    try {
+      const prefs =
+        locationState.preferences ?? (await getUserPreferences(user.id));
+      if (!prefs) {
         setLoading(false);
+        return;
       }
-    }
 
-    load();
+      setPreferences({
+        genres: prefs.genres ?? [],
+        moods: prefs.moods ?? [],
+        tropes: prefs.tropes ?? [],
+        representation: prefs.representation ?? [],
+        authors: prefs.authors ?? [],
+        formats: prefs.formats ?? [],
+      });
+
+      const results = await fetchBooksFromPreferences(prefs);
+      setBooks(results);
+    } catch (err) {
+      console.error("Failed to load recommended books", err);
+      setLoadError(
+        "Could not load recommended books right now. Please try again later."
+      );
+      setBooks([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadRecommendations();
   }, [user]);
 
   function goToLibrary() {
@@ -254,7 +254,12 @@ export default function Discover() {
         {loading ? (
           <p>Loading your recommendations...</p>
         ) : loadError ? (
-          <p>{loadError}</p>
+          <div>
+            <p>{loadError}</p>
+            <button type="button" onClick={loadRecommendations}>
+              Retry
+            </button>
+          </div>
         ) : currentBook ? (
           <div
             key={currentBook.id}
