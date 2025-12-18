@@ -87,8 +87,12 @@ export default function BookDetail() {
   if (error || !book) {
     return (
       <div role="alert" aria-live="assertive">
-        <p>{error ?? " Ingen bok hittades."}</p>
-        <button onClick={() => navigate(-1)}>Tillbaka</button>
+        <p>
+          {error ?? "We couldn't load this book right now. Please try again later."}
+        </p>
+        <button type="button" onClick={() => navigate(-1)}>
+          Go back
+        </button>
       </div>
     );
   }
