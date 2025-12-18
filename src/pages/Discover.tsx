@@ -246,7 +246,11 @@ export default function Discover() {
     <div className="discover-page">
       <h1 className="page-title">Discover</h1>
 
-      <section className="results-section">
+      <section
+        className="results-section"
+        aria-live="polite"
+        aria-busy={loading ? "true" : "false"}
+      >
         {loading ? (
           <p>Loading your recommendations...</p>
         ) : loadError ? (
@@ -316,6 +320,8 @@ export default function Discover() {
               ? "save-popup save-popup--already-saved"
               : "save-popup"
           }
+          role="status"
+          aria-live="polite"
         >
           {saveMessage}
         </div>

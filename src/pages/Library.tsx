@@ -128,11 +128,21 @@ export default function Library() {
           </label>
         </div>
       )}
-      {loading && <p>Loading library...</p>}
-      {error && <p className="error-message">{error}</p>}
+      {loading && (
+        <p role="status" aria-live="polite">
+          Loading library...
+        </p>
+      )}
+      {error && (
+        <p className="error-message" role="alert" aria-live="assertive">
+          {error}
+        </p>
+      )}
 
       {!loading && !error && items.length === 0 && (
-        <p>You have no saved books yet.</p>
+        <p role="status" aria-live="polite">
+          You have no saved books yet.
+        </p>
       )}
 
       {!loading && items.length > 0 && (
