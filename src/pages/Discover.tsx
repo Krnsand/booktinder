@@ -30,15 +30,20 @@ export default function Discover() {
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [preferences, setPreferences] = useState<{
-  genres?: string[];
-  moods?: string[];
-  tropes?: string[];
-  representation?: string[];
-  authors?: string[];
-  formats?: string[];
-} | null>(locationState.preferences ?? null);
+    genres?: string[];
+    moods?: string[];
+    tropes?: string[];
+    representation?: string[];
+    authors?: string[];
+    formats?: string[];
+  } | null>(locationState.preferences ?? null);
+  const [swipeState, setSwipeState] = useState<
+    { direction: "left" | "right"; bookId: string } | null
+  >(null);
+  const [coverErrorId, setCoverErrorId] = useState<string | null>(null);
 
   const currentBook = books[currentIndex] ?? null;
+
   const currentCoverUrl = currentBook
     ? (() => {
         const info = currentBook.volumeInfo ?? {};
@@ -52,14 +57,16 @@ export default function Discover() {
           const isbn10 = identifiers.find((id) => id.type === "ISBN_10");
           isbn = isbn13?.identifier || isbn10?.identifier;
         }
+        
 
         const img = info.imageLinks ?? {};
-        return (
-          (isbn ? getOpenLibraryCover(isbn) : undefined) ||
-          img.thumbnail ||
-          img.smallThumbnail ||
-          undefined
+        const googleCover = (img.thumbnail || img.smallThumbnail || "").replace(
+          /^http:\/\//,
+          "https://"
         );
+        const openLibraryCover = isbn ? getOpenLibraryCover(isbn) : undefined;
+
+        return googleCover || openLibraryCover || undefined;
       })()
     : undefined;
 
@@ -77,7 +84,6 @@ export default function Discover() {
       return;
     }
 
-      // store them for later use in handleSaveCurrent
     setPreferences({
       genres: prefs.genres ?? [],
       moods: prefs.moods ?? [],
@@ -100,11 +106,26 @@ export default function Discover() {
     navigate("/library");
   }
 
-  function showNextBook() {
+  function advanceToNextBook() {
     if (!currentBook) return;
-
     setBooks((prev) => prev.filter((b) => b.id !== currentBook.id));
     setCurrentIndex(0);
+  }
+
+  function triggerSwipe(direction: "left" | "right", afterSwipe: () => void) {
+    if (!currentBook) return;
+    const bookId = currentBook.id;
+    setSwipeState({ direction, bookId });
+
+    setTimeout(() => {
+      afterSwipe();
+      setSwipeState(null);
+    }, 300);
+  }
+
+  function handleSkipCurrent() {
+    if (!currentBook) return;
+    triggerSwipe("left", advanceToNextBook);
   }
 
   async function handleSaveCurrent() {
@@ -125,17 +146,18 @@ export default function Discover() {
       }
 
       const img = info.imageLinks ?? {};
-      const coverUrl =
-        (isbn ? getOpenLibraryCover(isbn) : undefined) ||
-        img.thumbnail ||
-        img.smallThumbnail ||
-        undefined;
+      const googleCover = (img.thumbnail || img.smallThumbnail || "").replace(
+        /^http:\/\//,
+        "https://"
+      );
+      const openLibraryCover = isbn ? getOpenLibraryCover(isbn) : undefined;
+      const coverUrl = googleCover || openLibraryCover || undefined;
 
       const alreadySaved = await isBookInLibrary(user.id, currentBook.id);
       if (alreadySaved) {
         setSaveMessage("This book has already been saved.");
         setTimeout(() => setSaveMessage(null), 3000);
-        showNextBook();
+        triggerSwipe("right", advanceToNextBook);
         return;
       }
 
@@ -151,7 +173,7 @@ export default function Discover() {
   moods: preferences?.moods,
 });
 
-      showNextBook();
+      triggerSwipe("right", advanceToNextBook);
       setSaveMessage("Book saved to your library.");
       setTimeout(() => setSaveMessage(null), 3000);
     } finally {
@@ -168,7 +190,23 @@ export default function Discover() {
           <p>Loading your recommendations...</p>
         ) : currentBook ? (
           <div
-            className="discover-current-book"
+            key={currentBook.id}
+            className={(() => {
+              const base = "discover-current-book";
+              if (!swipeState || swipeState.bookId !== currentBook.id) {
+                return base;
+              }
+
+              if (swipeState.direction === "left") {
+                return base + " discover-current-book--swipe-left";
+              }
+
+              if (swipeState.direction === "right") {
+                return base + " discover-current-book--swipe-right";
+              }
+
+              return base;
+            })()}
             onClick={() =>
               navigate(`/book/${currentBook.id}` , {
                 state: { books, currentIndex },
@@ -176,12 +214,17 @@ export default function Discover() {
             }
             style={{ cursor: "pointer" }}
           >
-            {currentCoverUrl && (
+            {currentCoverUrl && coverErrorId !== currentBook.id ? (
               <img
                 src={currentCoverUrl}
                 alt={currentBook.volumeInfo.title}
                 className="discover-book-cover"
+                onError={() => setCoverErrorId(currentBook.id)}
               />
+            ) : (
+              <div className="discover-book-cover discover-book-cover--placeholder">
+                No cover available
+              </div>
             )}
             <h3>{currentBook.volumeInfo?.title}</h3>
             {currentBook.volumeInfo?.authors && (
@@ -207,7 +250,7 @@ export default function Discover() {
       <div className="bottom-nav">
         <button
           type="button"
-          onClick={showNextBook}
+          onClick={handleSkipCurrent}
           disabled={books.length === 0}
           aria-label="Next book"
           className="icon-button"
