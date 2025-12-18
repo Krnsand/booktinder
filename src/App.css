@@ -172,6 +172,17 @@
 
 .discover-current-book {
   margin-bottom: 5rem;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.discover-current-book--swipe-left {
+  transform: translateX(-120%) rotate(-5deg);
+  opacity: 0;
+}
+
+.discover-current-book--swipe-right {
+  transform: translateX(120%) rotate(5deg);
+  opacity: 0;
 }
 
 .page-title {
@@ -243,7 +254,25 @@
 
 .discover-book-cover {
   width: 70%;
-  height: auto;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
+.discover-book-cover--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 260px;
+  max-width: 300px;
+  margin: 0 auto 1rem;
+  background-color: #f0e7d8;
+  color: #14102d;
+  border-radius: 8px;
+  border: 2px dashed #b19770;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 0 0.75rem;
 }
 
 .auth-page {
