@@ -57,6 +57,7 @@ export default function Discover() {
           const isbn10 = identifiers.find((id) => id.type === "ISBN_10");
           isbn = isbn13?.identifier || isbn10?.identifier;
         }
+        
 
         const img = info.imageLinks ?? {};
         const googleCover = (img.thumbnail || img.smallThumbnail || "").replace(
@@ -83,7 +84,6 @@ export default function Discover() {
       return;
     }
 
-      // store them for later use in handleSaveCurrent
     setPreferences({
       genres: prefs.genres ?? [],
       moods: prefs.moods ?? [],
