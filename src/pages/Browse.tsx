@@ -438,10 +438,19 @@ export default function Browse() {
         )}
       </section>
 
-      {error && <p className="error-message">{error}</p>}
+      {error && (
+        <p className="error-message" role="alert" aria-live="assertive">
+          {error}
+        </p>
+      )}
 
       <div className="bottom-nav">
-        <button onClick={handleStartDiscover} disabled={loading || selectedGenres.length === 0}>
+        <button
+          onClick={handleStartDiscover}
+          disabled={loading || selectedGenres.length === 0}
+          aria-busy={loading ? "true" : "false"}
+          aria-live="polite"
+        >
           {loading ? "Searching..." : "Start discovering"}
         </button>
       </div>

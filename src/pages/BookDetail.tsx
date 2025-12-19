@@ -77,14 +77,22 @@ export default function BookDetail() {
   }, [id]);
 
   if (loading) {
-    return <div>Loading book...</div>;
+    return (
+      <div role="status" aria-live="polite">
+        Loading book...
+      </div>
+    );
   }
 
   if (error || !book) {
     return (
-      <div>
-        <p>{error ?? " Ingen bok hittades."}</p>
-        <button onClick={() => navigate(-1)}>Tillbaka</button>
+      <div role="alert" aria-live="assertive">
+        <p>
+          {error ?? "We couldn't load this book right now. Please try again later."}
+        </p>
+        <button type="button" onClick={() => navigate(-1)}>
+          Go back
+        </button>
       </div>
     );
   }
@@ -198,6 +206,8 @@ export default function BookDetail() {
               ? "save-popup save-popup--already-saved"
               : "save-popup"
           }
+          role="status"
+          aria-live="polite"
         >
           {saveMessage}
         </div>

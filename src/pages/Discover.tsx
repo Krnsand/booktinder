@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type TouchEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { addToLibrary, isBookInLibrary } from "../api/library";
@@ -29,6 +29,7 @@ export default function Discover() {
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<{
     genres?: string[];
     moods?: string[];
@@ -41,6 +42,9 @@ export default function Discover() {
     { direction: "left" | "right"; bookId: string } | null
   >(null);
   const [coverErrorId, setCoverErrorId] = useState<string | null>(null);
+  const [dragStartX, setDragStartX] = useState<number | null>(null);
+  const [dragDeltaX, setDragDeltaX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   const currentBook = books[currentIndex] ?? null;
 
@@ -70,37 +74,46 @@ export default function Discover() {
       })()
     : undefined;
 
- useEffect(() => {
-  async function load() {
+  async function loadRecommendations() {
     if (!user) return;
     if (locationState.books) return;
 
     setLoading(true);
+    setLoadError(null);
 
-    const prefs =
-      locationState.preferences ?? (await getUserPreferences(user.id));
-    if (!prefs) {
+    try {
+      const prefs =
+        locationState.preferences ?? (await getUserPreferences(user.id));
+      if (!prefs) {
+        setLoading(false);
+        return;
+      }
+
+      setPreferences({
+        genres: prefs.genres ?? [],
+        moods: prefs.moods ?? [],
+        tropes: prefs.tropes ?? [],
+        representation: prefs.representation ?? [],
+        authors: prefs.authors ?? [],
+        formats: prefs.formats ?? [],
+      });
+
+      const results = await fetchBooksFromPreferences(prefs);
+      setBooks(results);
+    } catch (err) {
+      console.error("Failed to load recommended books", err);
+      setLoadError(
+        "Could not load recommended books right now. Please try again later."
+      );
+      setBooks([]);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setPreferences({
-      genres: prefs.genres ?? [],
-      moods: prefs.moods ?? [],
-      tropes: prefs.tropes ?? [],
-      representation: prefs.representation ?? [],
-      authors: prefs.authors ?? [],
-      formats: prefs.formats ?? [],
-    });
-
-    const results = await fetchBooksFromPreferences(prefs);
-    setBooks(results);
-
-    setLoading(false);
   }
 
-  load();
-}, [user]);
+  useEffect(() => {
+    loadRecommendations();
+  }, [user]);
 
   function goToLibrary() {
     navigate("/library");
@@ -181,13 +194,72 @@ export default function Discover() {
     }
   }
 
+  const swipeDragThreshold = 80;
+
+  function handleTouchStart(e: TouchEvent<HTMLDivElement>) {
+    if (!currentBook || swipeState) return;
+    const touch = e.touches[0];
+    setDragStartX(touch.clientX);
+    setDragDeltaX(0);
+    setIsDragging(false);
+  }
+
+  function handleTouchMove(e: TouchEvent<HTMLDivElement>) {
+    if (dragStartX === null || !currentBook || swipeState) return;
+    const touch = e.touches[0];
+    const delta = touch.clientX - dragStartX;
+    setDragDeltaX(delta);
+    if (Math.abs(delta) > 10 && !isDragging) {
+      setIsDragging(true);
+    }
+  }
+
+  function handleTouchEnd() {
+    if (dragStartX === null || !currentBook || swipeState) {
+      setDragStartX(null);
+      setDragDeltaX(0);
+      setIsDragging(false);
+      return;
+    }
+
+    const delta = dragDeltaX;
+    setDragStartX(null);
+    setDragDeltaX(0);
+
+    if (Math.abs(delta) < swipeDragThreshold) {
+      setIsDragging(false);
+      return;
+    }
+
+    if (delta < 0) {
+      // swipe left = skip
+      handleSkipCurrent();
+    } else {
+      // swipe right = save
+      handleSaveCurrent();
+    }
+
+    setIsDragging(false);
+  }
+
   return (
     <div className="discover-page">
       <h1 className="page-title">Discover</h1>
 
-      <section className="results-section">
+      <section
+        className="results-section"
+        aria-live="polite"
+        aria-busy={loading ? "true" : "false"}
+      >
         {loading ? (
           <p>Loading your recommendations...</p>
+        ) : loadError ? (
+          <div>
+            <p>{loadError}</p>
+            <button type="button" onClick={loadRecommendations}>
+              Retry
+            </button>
+          </div>
         ) : currentBook ? (
           <div
             key={currentBook.id}
@@ -207,12 +279,22 @@ export default function Discover() {
 
               return base;
             })()}
-            onClick={() =>
+            onClick={() => {
+              if (isDragging || swipeState) return;
               navigate(`/book/${currentBook.id}` , {
                 state: { books, currentIndex },
-              })
-            }
-            style={{ cursor: "pointer" }}
+              });
+            }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            style={{
+              cursor: "pointer",
+              transform:
+                !swipeState && dragStartX !== null
+                  ? `translateX(${dragDeltaX}px) rotate(${dragDeltaX / 20}deg)`
+                  : undefined,
+            }}
           >
             {currentCoverUrl && coverErrorId !== currentBook.id ? (
               <img
@@ -243,6 +325,8 @@ export default function Discover() {
               ? "save-popup save-popup--already-saved"
               : "save-popup"
           }
+          role="status"
+          aria-live="polite"
         >
           {saveMessage}
         </div>
