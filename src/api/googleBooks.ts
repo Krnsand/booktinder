@@ -1,6 +1,12 @@
-export async function fetchBooks(query: string) {
+export async function fetchBooks(query: string, maxResults = 40, startIndex = 0) {
+  const params = new URLSearchParams({
+    q: query,
+    maxResults: String(maxResults),
+    startIndex: String(startIndex),
+  });
+
   const response = await fetch(
-    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`
+    `https://www.googleapis.com/books/v1/volumes?${params.toString()}`
   );
 
   if (!response.ok) {
