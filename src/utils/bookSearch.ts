@@ -14,10 +14,6 @@ export function buildQueryFromPreferences(prefs: UserPreferences) {
 
   const parts: string[] = [];
 
-  if (prefs.genres?.length) {
-    parts.push(`subject:${prefs.genres[0]}`);
-  }
-
   const optionalKeys: (keyof UserPreferences)[] = [
     "moods",
     "tropes",
@@ -36,14 +32,37 @@ export function buildQueryFromPreferences(prefs: UserPreferences) {
   return parts.join(" ");
 }
 
-export async function fetchBooksFromPreferences(prefs: UserPreferences) {
-  const query = buildQueryFromPreferences(prefs);
+export interface FetchFromPreferencesOptions {
+  maxResultsPerGenre?: number;
+  startIndexPerGenre?: number;
+  randomizeStart?: boolean;
+}
+
+export async function fetchBooksFromPreferences(
+  prefs: UserPreferences,
+  options?: FetchFromPreferencesOptions
+) {
+  const extraQuery = buildQueryFromPreferences(prefs);
+
+  const maxResults = options?.maxResultsPerGenre ?? 40;
 
   if (!prefs.genres?.length) return [];
 
   if (prefs.genres.length > 1) {
     const results = await Promise.all(
-      prefs.genres.map((g) => fetchBooks(`subject:${g} ${query}`))
+      prefs.genres.map((g) => {
+        const base = `subject:${g}`;
+        const fullQuery = extraQuery ? `${base} ${extraQuery}` : base;
+        const startIndex = (() => {
+          if (options?.startIndexPerGenre != null) return options.startIndexPerGenre;
+          if (options?.randomizeStart) {
+            const page = Math.floor(Math.random() * 5); 
+            return page * maxResults;
+          }
+          return 0;
+        })();
+        return fetchBooks(fullQuery, maxResults, startIndex);
+      })
     );
 
     const merged = new Map();
@@ -56,5 +75,15 @@ export async function fetchBooksFromPreferences(prefs: UserPreferences) {
     return [...merged.values()];
   }
 
-  return await fetchBooks(query);
+  const base = `subject:${prefs.genres[0]}`;
+  const fullQuery = extraQuery ? `${base} ${extraQuery}` : base;
+  const startIndex = (() => {
+    if (options?.startIndexPerGenre != null) return options.startIndexPerGenre;
+    if (options?.randomizeStart) {
+      const page = Math.floor(Math.random() * 5);
+      return page * maxResults;
+    }
+    return 0;
+  })();
+  return await fetchBooks(fullQuery, maxResults, startIndex);
 }

@@ -121,6 +121,18 @@ export default function Browse() {
     };
   }, [user]);
 
+  function getSwipedBookIds(userId: string): string[] {
+    try {
+      const key = `swipedBooks_${userId}`;
+      const raw = localStorage.getItem(key);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? (parsed as string[]) : [];
+    } catch {
+      return [];
+    }
+  }
+
   function toggleGenre(genre: string) {
     setSelectedGenres((prev) =>
       prev.includes(genre)
@@ -181,8 +193,18 @@ export default function Browse() {
 
       const results = await fetchBooksFromPreferences(preferences);
 
+      const filteredResults = (() => {
+        try {
+          const swipedIds = getSwipedBookIds(user.id);
+          if (!Array.isArray(swipedIds) || swipedIds.length === 0) return results;
+          return results.filter((b: any) => !swipedIds.includes(b.id));
+        } catch {
+          return results;
+        }
+      })();
+
       navigate("/discover", {
-        state: { books: results, preferences },
+        state: { books: filteredResults, preferences },
       });
     } catch (err) {
       console.error(err);

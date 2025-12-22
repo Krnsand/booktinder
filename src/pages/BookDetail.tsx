@@ -31,6 +31,29 @@ export default function BookDetail() {
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
+  function getSwipedBookIds(userId: string): string[] {
+    try {
+      const key = `swipedBooks_${userId}`;
+      const raw = localStorage.getItem(key);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? (parsed as string[]) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function addSwipedBookId(userId: string, bookId: string) {
+    try {
+      const key = `swipedBooks_${userId}`;
+      const existing = getSwipedBookIds(userId);
+      if (existing.includes(bookId)) return;
+      const updated = [...existing, bookId];
+      localStorage.setItem(key, JSON.stringify(updated));
+    } catch {
+    }
+  }
+
   useEffect(() => {
     if (!saveMessage) return;
 
@@ -110,11 +133,12 @@ export default function BookDetail() {
   }
 
   const imgLinks = info.imageLinks ?? {};
-  const image =
-    (isbn ? getOpenLibraryCover(isbn) : undefined) ||
-    imgLinks.thumbnail ||
-    imgLinks.smallThumbnail ||
-    undefined;
+  const googleCover = (imgLinks.thumbnail || imgLinks.smallThumbnail || "").replace(
+    /^http:\/\//,
+    "https://"
+  );
+  const openLibraryCover = isbn ? getOpenLibraryCover(isbn) : undefined;
+  const image = googleCover || openLibraryCover || undefined;
 
   const discoverState = (location.state as { books?: any[]; currentIndex?: number }) || {};
   const discoverBooks = discoverState.books ?? [];
@@ -124,6 +148,10 @@ export default function BookDetail() {
     if (!discoverBooks.length) {
       navigate("/discover");
       return;
+    }
+
+    if (user && book) {
+      addSwipedBookId(user.id, book.id);
     }
 
     const filtered = discoverBooks.filter((_: any, idx: number) => idx !== discoverIndex);
@@ -165,6 +193,7 @@ export default function BookDetail() {
       });
 
       setSaveMessage("Book saved to your library.");
+      addSwipedBookId(user.id, book.id);
     } catch (err: any) {
       console.error(err);
       setSaveMessage("Could not save book. Try again.");
