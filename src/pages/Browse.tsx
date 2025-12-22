@@ -221,12 +221,16 @@ export default function Browse() {
       <section className="filter-section">
         <button
           type="button"
-          className="filter-dropdown-toggle"
+          className={
+            openSection === "genres"
+              ? "filter-dropdown-toggle filter-dropdown-toggle--open"
+              : "filter-dropdown-toggle"
+          }
           onClick={() =>
             setOpenSection((prev) => (prev === "genres" ? null : "genres"))
           }
         >
-          Genres
+          Genre
         </button>
         {openSection === "genres" && (
           <div className="genre-list">
@@ -261,12 +265,16 @@ export default function Browse() {
       <section className="filter-section">
         <button
           type="button"
-          className="filter-dropdown-toggle"
+          className={
+            openSection === "mood"
+              ? "filter-dropdown-toggle filter-dropdown-toggle--open"
+              : "filter-dropdown-toggle"
+          }
           onClick={() =>
             setOpenSection((prev) => (prev === "mood" ? null : "mood"))
           }
         >
-          Mood
+          Mood / Tone
         </button>
         {openSection === "mood" && (
           <div className="genre-list">
@@ -301,12 +309,16 @@ export default function Browse() {
       <section className="filter-section">
         <button
           type="button"
-          className="filter-dropdown-toggle"
+          className={
+            openSection === "tropes"
+              ? "filter-dropdown-toggle filter-dropdown-toggle--open"
+              : "filter-dropdown-toggle"
+          }
           onClick={() =>
             setOpenSection((prev) => (prev === "tropes" ? null : "tropes"))
           }
         >
-          Tropes
+          Trope
         </button>
         {openSection === "tropes" && (
           <div className="genre-list">
@@ -341,7 +353,11 @@ export default function Browse() {
       <section className="filter-section">
         <button
           type="button"
-          className="filter-dropdown-toggle"
+          className={
+            openSection === "representation"
+              ? "filter-dropdown-toggle filter-dropdown-toggle--open"
+              : "filter-dropdown-toggle"
+          }
           onClick={() =>
             setOpenSection((prev) =>
               prev === "representation" ? null : "representation"
@@ -383,7 +399,11 @@ export default function Browse() {
       <section className="filter-section">
         <button
           type="button"
-          className="filter-dropdown-toggle"
+          className={
+            openSection === "author"
+              ? "filter-dropdown-toggle filter-dropdown-toggle--open"
+              : "filter-dropdown-toggle"
+          }
           onClick={() =>
             setOpenSection((prev) => (prev === "author" ? null : "author"))
           }
@@ -423,7 +443,11 @@ export default function Browse() {
       <section className="filter-section">
         <button
           type="button"
-          className="filter-dropdown-toggle"
+          className={
+            openSection === "format"
+              ? "filter-dropdown-toggle filter-dropdown-toggle--open"
+              : "filter-dropdown-toggle"
+          }
           onClick={() =>
             setOpenSection((prev) => (prev === "format" ? null : "format"))
           }

@@ -158,10 +158,39 @@
   text-align: center;
 }
 
+.browse-page .filter-section {
+  text-align: left;
+}
+
 .genre-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1rem;
+}
+
+.filter-dropdown-toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #F0E7D8;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.filter-dropdown-toggle::after {
+  content: '\25B6'; /* right-pointing triangle */
+  font-size: 0.9rem;
+  transition: transform 0.2s ease;
+}
+
+.filter-dropdown-toggle--open::after {
+  transform: rotate(90deg);
 }
 
 .genre-item {
@@ -375,6 +404,10 @@
   color: #F0E7D8;
 }
 
+.book-detail-meta {
+  text-align: center;
+}
+
 .book-detail-info p {
   margin: 0.25rem 0;
 }
@@ -392,6 +425,7 @@
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.5;
+  margin-bottom: 4rem;
 }
 
 @media (min-width: 768px) {
