@@ -45,6 +45,80 @@ export default function Discover() {
   const [dragStartX, setDragStartX] = useState<number | null>(null);
   const [dragDeltaX, setDragDeltaX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [randomLoadCount, setRandomLoadCount] = useState(0);
+
+  function getSwipedBookIds(userId: string): string[] {
+    try {
+      const key = `swipedBooks_${userId}`;
+      const raw = localStorage.getItem(key);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? (parsed as string[]) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  async function loadMoreRecommendations() {
+    if (!user) return;
+
+    const currentPrefs = preferences;
+
+    if (!currentPrefs) {
+      await loadRecommendations();
+      return;
+    }
+
+    const maxRandomLoads = 5;
+    if (randomLoadCount >= maxRandomLoads) {
+      setLoadError(
+        "You’ve seen most of what matches your filters. Try adjusting your preferences for more variety."
+      );
+      return;
+    }
+
+    setLoading(true);
+    setLoadError(null);
+
+    try {
+      const results = await fetchBooksFromPreferences(currentPrefs, {
+        randomizeStart: true,
+      });
+
+      const filteredResults = user
+        ? (() => {
+            const swipedIds = getSwipedBookIds(user.id);
+            const existingIds = new Set(books.map((b) => b.id));
+            return results.filter(
+              (b: any) =>
+                !swipedIds.includes(b.id) && !existingIds.has(b.id)
+            );
+          })()
+        : results;
+
+      setBooks((prev) => [...prev, ...filteredResults]);
+      setRandomLoadCount((count) => count + 1);
+    } catch (err) {
+      console.error("Failed to load more recommended books", err);
+      setLoadError(
+        "Could not load more books right now. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function addSwipedBookId(userId: string, bookId: string) {
+    try {
+      const key = `swipedBooks_${userId}`;
+      const existing = getSwipedBookIds(userId);
+      if (existing.includes(bookId)) return;
+      const updated = [...existing, bookId];
+      localStorage.setItem(key, JSON.stringify(updated));
+    } catch {
+     
+    }
+  }
 
   const currentBook = books[currentIndex] ?? null;
 
@@ -76,7 +150,25 @@ export default function Discover() {
 
   async function loadRecommendations() {
     if (!user) return;
-    if (locationState.books) return;
+
+    if (locationState.books) {
+      const baseBooks = locationState.books;
+      const normalized = user
+        ? (() => {
+            const swipedIds = getSwipedBookIds(user.id);
+            if (!Array.isArray(swipedIds) || swipedIds.length === 0) {
+              return baseBooks;
+            }
+            return baseBooks.filter((b: any) => !swipedIds.includes(b.id));
+          })()
+        : baseBooks;
+
+      setBooks(normalized);
+      setCurrentIndex(locationState.currentIndex ?? 0);
+      setPreferences(locationState.preferences ?? preferences);
+      setRandomLoadCount(1);
+      return;
+    }
 
     setLoading(true);
     setLoadError(null);
@@ -98,8 +190,23 @@ export default function Discover() {
         formats: prefs.formats ?? [],
       });
 
-      const results = await fetchBooksFromPreferences(prefs);
-      setBooks(results);
+      const results = await fetchBooksFromPreferences(prefs, {
+        randomizeStart: true,
+      });
+
+      const filteredResults = user
+        ? (() => {
+            const swipedIds = getSwipedBookIds(user.id);
+            if (!Array.isArray(swipedIds) || swipedIds.length === 0) {
+              return results;
+            }
+            return results.filter((b: any) => !swipedIds.includes(b.id));
+          })()
+        : results;
+
+      setBooks(filteredResults);
+      setCurrentIndex(0);
+      setRandomLoadCount(1);
     } catch (err) {
       console.error("Failed to load recommended books", err);
       setLoadError(
@@ -121,6 +228,11 @@ export default function Discover() {
 
   function advanceToNextBook() {
     if (!currentBook) return;
+
+    if (user) {
+      addSwipedBookId(user.id, currentBook.id);
+    }
+
     setBooks((prev) => prev.filter((b) => b.id !== currentBook.id));
     setCurrentIndex(0);
   }
@@ -314,7 +426,16 @@ export default function Discover() {
             )}
           </div>
         ) : (
-          <p>No books to show. Go back to preferences.</p>
+          <div>
+            <p>No books to show right now.</p>
+            <button
+              type="button"
+              onClick={loadMoreRecommendations}
+              disabled={loading}
+            >
+              Load more recommendations
+            </button>
+          </div>
         )}
       </section>
 
