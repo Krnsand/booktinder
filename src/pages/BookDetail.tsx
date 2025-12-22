@@ -217,8 +217,10 @@ export default function BookDetail() {
 
         <div className="book-detail-info">
           <h1 className="page-title">{info.title ?? "Title missing"}</h1>
-          {info.authors && <p>Authors: {info.authors.join(", ")}</p>}
-          {info.publishedDate && <p>Published date: {info.publishedDate}</p>}
+          <div className="book-detail-meta">
+            {info.authors && <p>Authors: {info.authors.join(", ")}</p>}
+            {info.publishedDate && <p>Published date: {info.publishedDate}</p>}
+          </div>
 
           {info.description && (
             <section className="book-detail-description">
