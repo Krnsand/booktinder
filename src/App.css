@@ -424,6 +424,11 @@
   background-color: #7c3aed; 
 }
 
+.go-back-btn {
+ padding: 0.4em 0.8em;
+ margin: 0 1rem;
+}
+
 .book-detail-content {
   margin-top: 1.5rem;
   display: flex;
@@ -454,7 +459,8 @@
 }
 
 .book-detail-description {
-  margin-top: 1rem;
+ margin-top: 1rem;
+ padding: 0 2rem;
 }
 
 .book-detail-description h2 {
