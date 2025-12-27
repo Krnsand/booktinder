@@ -144,12 +144,18 @@
   padding: 0;
 }
 
-.browse-page,
 .discover-page,
 .library-page,
 .book-detail-page {
   max-width: 1000px;
   margin: 0 auto;
+}
+
+.filtration {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 15%;
+  text-align: left;
 }
 
 .filter-section,
@@ -158,7 +164,7 @@
   text-align: center;
 }
 
-.browse-page .filter-section {
+.filter-section {
   text-align: left;
 }
 
@@ -231,6 +237,18 @@
   justify-content: flex-start;
   gap: 1.5rem;
   margin-top: 2rem;
+}
+
+.welcome-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.welcome-content {
+  max-width: 480px;
+  text-align: center;
+  padding: 0 4%;
 }
 
 .home-actions {
