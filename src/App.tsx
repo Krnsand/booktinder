@@ -8,6 +8,7 @@ import BookDetail from "./pages/BookDetail";
 import SignIn from "./pages/SignIn";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
+import Welcome from "./pages/Welcome";
 import Header from "./components/Header";
 import { useAuth } from "./context/AuthContext";
 
@@ -37,6 +38,14 @@ export default function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Home />} />
+        <Route
+          path="/welcome"
+          element={
+            <RequireAuth>
+              <Welcome />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/preferences"
           element={
