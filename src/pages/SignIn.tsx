@@ -22,7 +22,7 @@ export default function SignIn() {
     setLoading(true);
     try {
       await signIn(email, password);
-      navigate('/preferences');
+      navigate('/welcome');
     } catch (err: any) {
       const raw = err?.message ?? '';
       let message = 'Could not sign in. Check email and password.';

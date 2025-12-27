@@ -215,7 +215,7 @@ export default function Browse() {
   }
 
   return (
-    <div className="browse-page">
+    <div className="filtration">
       <h1 className="page-title">Preferences</h1>
 
       <section className="filter-section">
