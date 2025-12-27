@@ -71,8 +71,8 @@
 .icon-button {
   width: 48px;
   height: 48px;
-  min-width: 48px;
-  min-height: 48px;
+  min-width: 60px;
+  min-height: 60px;
   background: #2a2a2a;
   border: 2px solid #3a3a3a;
   color: #F0E7D8;
@@ -100,8 +100,8 @@
 .profile-icon-button {
   width: 48px;
   height: 48px;
-  min-width: 48px;
-  min-height: 48px;
+  min-width: 50px;
+  min-height: 50px;
   border-radius: 50%;
   background-color: #3a3a3a;
   color: #F0E7D8;
@@ -301,6 +301,24 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+.library-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.library-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.delete-multiple-btn {
+  padding: 0.3em 0.7em;
+
 }
 
 .book-item {
