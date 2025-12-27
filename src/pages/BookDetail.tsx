@@ -113,7 +113,7 @@ export default function BookDetail() {
         <p>
           {error ?? "We couldn't load this book right now. Please try again later."}
         </p>
-        <button type="button" onClick={() => navigate(-1)}>
+        <button className="go-back-btn" type="button" onClick={() => navigate(-1)}>
           Go back
         </button>
       </div>
@@ -139,6 +139,13 @@ export default function BookDetail() {
   );
   const openLibraryCover = isbn ? getOpenLibraryCover(isbn) : undefined;
   const image = googleCover || openLibraryCover || undefined;
+
+  const cleanDescription = (() => {
+    const raw = (info as any).description as string | undefined;
+    if (!raw) return "";
+    // Remove basic HTML tags like <p>, <i>, <br>, etc.
+    return raw.replace(/<[^>]+>/g, "");
+  })();
 
   const discoverState = (location.state as { books?: any[]; currentIndex?: number }) || {};
   const discoverBooks = discoverState.books ?? [];
@@ -204,7 +211,7 @@ export default function BookDetail() {
 
   return (
     <div className="book-detail-page">
-      <button onClick={() => navigate(-1)}>Go Back</button>
+      <button className="go-back-btn" onClick={() => navigate(-1)}>Go Back</button>
 
       <div className="book-detail-content">
         {image && (
@@ -222,10 +229,10 @@ export default function BookDetail() {
             {info.publishedDate && <p>Published date: {info.publishedDate}</p>}
           </div>
 
-          {info.description && (
+          {cleanDescription && (
             <section className="book-detail-description">
               <h2>Description</h2>
-              <p>{info.description}</p>
+              <p>{cleanDescription}</p>
             </section>
           )}
         </div>
