@@ -133,6 +133,10 @@
   padding: 10px 0;
 }
 
+.library-page .bottom-nav button {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
 
 .profile-icon-button {
   width: 32px;
@@ -145,10 +149,15 @@
 }
 
 .discover-page,
-.library-page,
 .book-detail-page {
   max-width: 1000px;
   margin: 0 auto;
+}
+
+.library-page {
+  max-width: 1000px;
+  margin: 0 auto 3rem;
+  padding: 0 4%;
 }
 
 .filtration {
@@ -156,6 +165,20 @@
   margin: 0 auto;
   padding: 0 15%;
   text-align: left;
+}
+
+.library-sort {
+  margin: 0.5rem 0 1rem;
+}
+
+.library-sort label {
+  font-weight: 600;
+}
+
+.library-sort select {
+  font-weight: 600;
+  background-color: #14102D; 
+  color: #F0E7D8;           
 }
 
 .filter-section,
@@ -190,7 +213,7 @@
 }
 
 .filter-dropdown-toggle::after {
-  content: '\25B6'; /* right-pointing triangle */
+  content: '\25B6'; 
   font-size: 0.9rem;
   transition: transform 0.2s ease;
 }
@@ -479,25 +502,25 @@
 }
 
 .library-card-cover {
-  width: 48px;
-  height: 72px;
+  width: 56px;
+  height: 84px;
   object-fit: cover;
   border-radius: 4px;
 }
 
 .library-card-main {
   flex: 1;
+  text-align: center;
 }
 
-.library-card-main h3 {
+.library-card-main h2 {
   margin: 0 0 0.25rem;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #4b5563;
 }
 
 .library-card-main p {
   margin: 0;
-  font-size: 0.85rem;
   color: #4b5563;
 }
 
@@ -509,7 +532,8 @@
 }
 
 .status-icon {
-  font-size: 0.9rem;
+  font-size: 1.4rem;
+  font-weight: 700;
 }
 
 .status-icon.heart {
@@ -517,7 +541,7 @@
 }
 
 .status-icon.check {
-  color: #16a34a;
+  color: #176133;
 }
 
 .library-card-menu {
@@ -525,7 +549,9 @@
 }
 
 .menu-button {
-  padding: 0.25rem 0.5rem;
+  padding: 0.4rem 0.7rem;
+  font-size: 2rem;
+  font-weight: 550;
 }
 
 .menu-dropdown {
