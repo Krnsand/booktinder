@@ -8,6 +8,9 @@ interface BookCardProps {
   onToggleFavorite: () => void;
   onToggleHasRead: () => void;
   onRemove: () => void;
+  selectable?: boolean;
+  selected?: boolean;
+  onToggleSelect?: () => void;
 }
 
 export default function BookCard({
@@ -18,6 +21,9 @@ export default function BookCard({
   onToggleFavorite,
   onToggleHasRead,
   onRemove,
+  selectable = false,
+  selected = false,
+  onToggleSelect,
 }: BookCardProps) {
   return (
     <li
@@ -61,43 +67,57 @@ export default function BookCard({
         {item.has_read && <span className="status-icon check">✓</span>}
       </div>
       <div className="library-card-menu">
-        <button
-          className="menu-button"
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleMenu();
-          }}
-        >
-          &#8942;
-        </button>
-        {isMenuOpen && (
-          <div
-            className="menu-dropdown"
+        {selectable ? (
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={(e) => {
+              e.stopPropagation();
+              onToggleSelect && onToggleSelect();
+            }}
             onClick={(e) => e.stopPropagation()}
-          >
+          />
+        ) : (
+          <>
             <button
+              className="menu-button"
               type="button"
-              className={item.is_favorite ? "menu-item active" : "menu-item"}
-              onClick={onToggleFavorite}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleMenu();
+              }}
             >
-              Favorite
+              &#8942;
             </button>
-            <button
-              type="button"
-              className={item.has_read ? "menu-item active" : "menu-item"}
-              onClick={onToggleHasRead}
-            >
-              Have Read
-            </button>
-            <button
-              type="button"
-              className="menu-item remove"
-              onClick={onRemove}
-            >
-              Remove book
-            </button>
-          </div>
+            {isMenuOpen && (
+              <div
+                className="menu-dropdown"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  className={item.is_favorite ? "menu-item active" : "menu-item"}
+                  onClick={onToggleFavorite}
+                >
+                  Favorite
+                </button>
+                <button
+                  type="button"
+                  className={item.has_read ? "menu-item active" : "menu-item"}
+                  onClick={onToggleHasRead}
+                >
+                  Have Read
+                </button>
+                <button
+                  type="button"
+                  className="menu-item remove"
+                  onClick={onRemove}
+                >
+                  Remove book
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </li>

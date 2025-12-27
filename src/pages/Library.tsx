@@ -12,6 +12,8 @@ export default function Library() {
   const [error, setError] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<"none" | "alpha" | "favorites" | "has_read">("none");
+  const [multiSelectEnabled, setMultiSelectEnabled] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -41,6 +43,31 @@ export default function Library() {
       isMounted = false;
     };
   }, [user]);
+
+  async function removeSelected() {
+    if (selectedIds.length === 0) return;
+
+    const confirmMessage =
+      selectedIds.length === 1
+        ? "Remove this book from your library?"
+        : `Remove ${selectedIds.length} books from your library?`;
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      for (const id of selectedIds) {
+        await deleteLibraryItem(id);
+      }
+      setItems((prev) => prev.filter((it) => !selectedIds.includes(it.id)));
+      setSelectedIds([]);
+      setMultiSelectEnabled(false);
+      setOpenMenuId(null);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   async function removeItem(id: string) {
     try {
@@ -106,27 +133,62 @@ export default function Library() {
     >
       <h1 className="page-title">My Library</h1>
       {!loading && !error && items.length > 0 && (
-        <div className="library-sort">
-          <label>
-            Sort by:{" "}
-            <select
-              value={sortMode}
-              onChange={(e) =>
-                setSortMode(
-                  e.target.value as
-                    | "none"
-                    | "alpha"
-                    | "favorites"
-                    | "has_read"
-                )
-              }
-            >
-              <option value="none">Clear filter</option>
-              <option value="alpha">Alphabetical (title)</option>
-              <option value="favorites">Favorites</option>
-              <option value="has_read">Has read</option>
-            </select>
-          </label>
+        <div className="library-header-row">
+          <div className="library-sort">
+            <label>
+              Sort by:{" "}
+              <select
+                value={sortMode}
+                onChange={(e) =>
+                  setSortMode(
+                    e.target.value as
+                      | "none"
+                      | "alpha"
+                      | "favorites"
+                      | "has_read"
+                  )
+                }
+              >
+                <option value="none">Clear filter</option>
+                <option value="alpha">Alphabetical (title)</option>
+                <option value="favorites">Favorites</option>
+                <option value="has_read">Has read</option>
+              </select>
+            </label>
+          </div>
+          <div className="library-actions">
+            {!multiSelectEnabled && (
+              <button className="delete-multiple-btn"
+                type="button"
+                onClick={() => {
+                  setMultiSelectEnabled(true);
+                  setSelectedIds([]);
+                }}
+              >
+                Select multiple
+              </button>
+            )}
+            {multiSelectEnabled && (
+              <>
+                <button className="delete-multiple-btn"
+                  type="button"
+                  onClick={() => {
+                    setMultiSelectEnabled(false);
+                    setSelectedIds([]);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button className="delete-multiple-btn"
+                  type="button"
+                  onClick={removeSelected}
+                  disabled={selectedIds.length === 0}
+                >
+                  Remove selected ({selectedIds.length})
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
       {loading && (
@@ -160,6 +222,15 @@ export default function Library() {
               onToggleFavorite={() => toggleItem(item.id, "is_favorite")}
               onToggleHasRead={() => toggleItem(item.id, "has_read")}
               onRemove={() => removeItem(item.id)}
+              selectable={multiSelectEnabled}
+              selected={selectedIds.includes(item.id)}
+              onToggleSelect={() => {
+                setSelectedIds((prev) =>
+                  prev.includes(item.id)
+                    ? prev.filter((id) => id !== item.id)
+                    : [...prev, item.id]
+                );
+              }}
             />
           ))}
         </ul>
