@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getLibrary, updateLibraryItem, deleteLibraryItem, type LibraryItem } from "../api/library";
+import BookCard from "../components/BookCard";
 
 export default function Library() {
   const navigate = useNavigate();
@@ -84,13 +85,13 @@ export default function Library() {
     displayedItems.sort((a, b) => {
       const favA = a.is_favorite ? 1 : 0;
       const favB = b.is_favorite ? 1 : 0;
-      return favB - favA; // favorites first
+      return favB - favA; 
     });
   } else if (sortMode === "has_read") {
     displayedItems.sort((a, b) => {
       const readA = a.has_read ? 1 : 0;
       const readB = b.has_read ? 1 : 0;
-      return readB - readA; // read first
+      return readB - readA; 
     });
   }
 
@@ -148,76 +149,18 @@ export default function Library() {
       {!loading && items.length > 0 && (
         <ul className="library-list">
           {displayedItems.map((item) => (
-            <li
+            <BookCard
               key={item.id}
-              className="library-card"
+              item={item}
+              isMenuOpen={openMenuId === item.id}
               onClick={() => navigate(`/book/${item.google_volume_id}`)}
-              style={{ cursor: "pointer" }}
-            >
-              {item.thumbnail && (
-                <img
-                  src={item.thumbnail}
-                  alt={item.title ?? "Bokomslag"}
-                  className="library-card-cover"
-                />
-              )}
-              <div className="library-card-main">
-                <h3>{item.title ?? "Titel saknas"}</h3>
-                {(() => {
-                  const a = item.authors;
-                  const text = Array.isArray(a)
-                    ? a.join(", ")
-                    : typeof a === "string"
-                    ? a
-                    : null;
-                  return text ? <p>{text}</p> : null;
-                })()}
-              </div>
-              <div className="library-card-status">
-                {item.is_favorite && <span className="status-icon heart">♥</span>}
-                {item.has_read && <span className="status-icon check">✓</span>}
-              </div>
-              <div className="library-card-menu">
-                <button
-                  className="menu-button"
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpenMenuId((prev) => (prev === item.id ? null : item.id));
-                  }}
-                >
-                  &#8942;
-                </button>
-                {openMenuId === item.id && (
-                  <div
-                    className="menu-dropdown"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      type="button"
-                      className={item.is_favorite ? "menu-item active" : "menu-item"}
-                      onClick={() => toggleItem(item.id, "is_favorite")}
-                    >
-                      Favorite
-                    </button>
-                    <button
-                      type="button"
-                      className={item.has_read ? "menu-item active" : "menu-item"}
-                      onClick={() => toggleItem(item.id, "has_read")}
-                    >
-                      Have Read
-                    </button>
-                    <button
-                      type="button"
-                      className="menu-item remove"
-                      onClick={() => removeItem(item.id)}
-                    >
-                      Remove book
-                    </button>
-                  </div>
-                )}
-              </div>
-            </li>
+              onToggleMenu={() =>
+                setOpenMenuId((prev) => (prev === item.id ? null : item.id))
+              }
+              onToggleFavorite={() => toggleItem(item.id, "is_favorite")}
+              onToggleHasRead={() => toggleItem(item.id, "has_read")}
+              onRemove={() => removeItem(item.id)}
+            />
           ))}
         </ul>
       )}
