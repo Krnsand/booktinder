@@ -14,6 +14,8 @@ interface VolumeInfo {
     thumbnail?: string;
     smallThumbnail?: string;
   };
+  averageRating?: number;
+  ratingsCount?: number;
 }
 
 interface Book {
@@ -122,6 +124,8 @@ export default function BookDetail() {
   }
 
   const info = book.volumeInfo ?? {};
+  const averageRating = info.averageRating;
+const ratingsCount = info.ratingsCount;
   const identifiers = (info as any).industryIdentifiers as
     | { type: string; identifier: string }[]
     | undefined;
@@ -228,6 +232,20 @@ export default function BookDetail() {
           <div className="book-detail-meta">
             {info.authors && <p>Authors: {info.authors.join(", ")}</p>}
             {info.publishedDate && <p>Published date: {info.publishedDate}</p>}
+            {typeof averageRating === "number" ? (
+              <p>
+                Rating:{" "}
+                {(() => {
+                  const rounded = Math.round(averageRating);
+                  const safe = Math.min(5, Math.max(0, rounded));
+                  const stars = "★".repeat(safe) + "☆".repeat(5 - safe);
+                  return stars;
+                })()}
+                {ratingsCount != null && ` (${ratingsCount})`}
+              </p>
+            ) : (
+              <p>No ratings available</p>
+            )}
           </div>
 
           {cleanDescription && (
