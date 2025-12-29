@@ -1,13 +1,22 @@
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const initial = user?.email?.[0]?.toUpperCase() ?? '?';
+  const initial = user?.email?.[0]?.toUpperCase() ?? "?";
 
   const location = useLocation();
-  const isNotPreferencesPage = location.pathname !== '/preferences';
+  const isNotPreferencesPage = location.pathname !== "/preferences";
+  const isProfilePage = location.pathname === "/profile";
+
+  async function handleSignOutFromHeader() {
+    const confirmed = window.confirm("Are you sure you want to sign out?");
+    if (!confirmed) return;
+
+    await signOut();
+    navigate("/signin");
+  }
 
   return (
     <header className="app-header">
@@ -15,7 +24,7 @@ export default function Header() {
         {isNotPreferencesPage && (
           <button
             type="button"
-            onClick={() => navigate('/preferences')}
+            onClick={() => navigate("/preferences")}
             aria-label="Go to preferences"
             className="icon-button"
           >
@@ -39,15 +48,25 @@ export default function Header() {
         )}
       </div>
       <h1 className="app-title">Bookify</h1>
-      <nav className="app-nav">
-        <button
-          className="profile-icon-button"
-          aria-label="Profile"
-          onClick={() => navigate('/profile')}
-        >
-          {initial}
-        </button>
-      </nav>
+     <nav className="app-nav">
+  {isProfilePage ? (
+    <button
+      type="button"
+      className="profile-icon-button"
+      onClick={handleSignOutFromHeader}
+    >
+      Sign out
+    </button>
+  ) : (
+    <button
+      className="profile-icon-button"
+      aria-label="Profile"
+      onClick={() => navigate("/profile")}
+    >
+      {initial}
+    </button>
+  )}
+</nav>
     </header>
   );
 }
