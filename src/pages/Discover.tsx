@@ -5,6 +5,7 @@ import { addToLibrary, isBookInLibrary } from "../api/library";
 import { getOpenLibraryCover } from "../api/googleBooks";
 import { getUserPreferences } from "../api/preferences";
 import { fetchBooksFromPreferences } from "../utils/bookSearch";
+import Spinner from "../components/Spinner";
 
 export default function Discover() {
   const navigate = useNavigate();
@@ -364,7 +365,9 @@ export default function Discover() {
         aria-busy={loading ? "true" : "false"}
       >
         {loading ? (
-          <p>Loading your recommendations...</p>
+          <div className="spinner-container">
+            <Spinner label="Loading your recommendations..." />
+          </div>
         ) : loadError ? (
           <div>
             <p>{loadError}</p>

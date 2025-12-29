@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { fetchBookById, getOpenLibraryCover } from "../api/googleBooks";
 import { useAuth } from "../context/AuthContext";
 import { addToLibrary, isBookInLibrary } from "../api/library";
+import Spinner from "../components/Spinner";
 
 interface VolumeInfo {
   title?: string;
@@ -101,8 +102,8 @@ export default function BookDetail() {
 
   if (loading) {
     return (
-      <div role="status" aria-live="polite">
-        Loading book...
+      <div className="spinner-container">
+        <Spinner label="Loading book..." />
       </div>
     );
   }

@@ -608,3 +608,35 @@
 .menu-item.active {
   font-weight: 600;
 }
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.spinner-circle {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  border: 3px solid rgba(240, 231, 216, 0.4);
+  border-top-color: #f0e7d8;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+.spinner-label {
+  font-size: 0.95rem;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
