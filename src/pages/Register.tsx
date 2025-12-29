@@ -82,6 +82,10 @@ export default function Register() {
         </button>
       </form>
       <p>
+        After registering, please check your email inbox and confirm your email
+        address before trying to sign in.
+      </p>
+      <p>
         Already have an account? <Link to="/signin">Sign in</Link>
       </p>
     </div>

@@ -70,7 +70,18 @@ export default function Profile() {
         </div>
       )}
 
+      <div className="profile-content" style={{ marginTop: '0.5rem' }}>
+        <button 
+          type="button"
+          className="primary-button change-avatar-btn"
+          onClick={() => navigate('/welcome')}
+        >
+          Change avatar
+        </button>
+      </div>
       {user && <p className="profile-content">{user.email}</p>}
+
+
       <h2 className="profile-content">My preferences</h2>
 
       {preferences && (

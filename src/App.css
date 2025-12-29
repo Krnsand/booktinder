@@ -284,6 +284,14 @@
   padding: 0 4%;
 }
 
+.avatar-btn {
+  margin-bottom: 5rem;
+}
+
+.change-avatar-btn {
+  padding: 0.3em 0.7em;
+}
+
 .home-actions {
   display: flex;
   flex-direction: column;
