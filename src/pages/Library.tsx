@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getLibrary, updateLibraryItem, deleteLibraryItem, type LibraryItem } from "../api/library";
 import BookCard from "../components/BookCard";
+import Spinner from "../components/Spinner";
 
 export default function Library() {
   const navigate = useNavigate();
@@ -192,9 +193,9 @@ export default function Library() {
         </div>
       )}
       {loading && (
-        <p role="status" aria-live="polite">
-          Loading library...
-        </p>
+        <div className="spinner-container">
+          <Spinner label="Loading library..." />
+        </div>
       )}
       {error && (
         <p className="error-message" role="alert" aria-live="assertive">
