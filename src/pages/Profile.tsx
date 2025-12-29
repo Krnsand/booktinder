@@ -3,15 +3,8 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { signOut, user } = useAuth();
+  const { user } = useAuth();
 
-  // async function handleSignOut() {
-  //   const confirmed = window.confirm("Are you sure you want to sign out?");
-  //   if (!confirmed) return;
-
-  //   await signOut();
-  //   navigate('/signin');
-  // }
 
   return (
     <div className="profile-page">
