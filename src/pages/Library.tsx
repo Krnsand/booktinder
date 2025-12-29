@@ -204,7 +204,7 @@ export default function Library() {
       )}
 
       {!loading && !error && items.length === 0 && (
-        <p role="status" aria-live="polite">
+        <p className="empty-library" role="status" aria-live="polite">
           You have no saved books yet.
         </p>
       )}
