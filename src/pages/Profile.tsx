@@ -6,13 +6,29 @@ export default function Profile() {
   const { user } = useAuth();
 
 
-  return (
-    <div className="profile-page">
-       <h1 className="page-title">
+return (
+  <div className="profile-page">
+    <h1 className="page-title">
       {user ? `Hello ${user.user_metadata.username}!` : "Profile"}
     </h1>
-      {user && <p>{user.email}</p>}
-      <p>My preferences</p>
+
+    {user?.user_metadata?.avatar_url && (
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
+        <img
+          src={user.user_metadata.avatar_url}
+          alt={user.user_metadata.username ?? "Profile avatar"}
+          style={{
+            width: 200,
+            height: 200,
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
+        />
+      </div>
+    )}
+
+    {user && <p>{user.email}</p>}
+    <p>My preferences</p>
       <div className="bottom-nav">
         <div className="profile-bottom-buttons">
           <button
