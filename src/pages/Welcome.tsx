@@ -1,7 +1,72 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../lib/supabaseClient";
 
 export default function Welcome() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [savingAvatar, setSavingAvatar] = useState(false);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+
+  function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    setAvatarError(null);
+    setAvatarFile(file ?? null);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setAvatarPreview(url);
+    } else {
+      setAvatarPreview(null);
+    }
+  }
+
+  async function handleSaveAvatar() {
+    try {
+      setAvatarError(null);
+      if (!user) {
+        setAvatarError("You need to be signed in to save an avatar.");
+        return;
+      }
+      if (!avatarFile) {
+        setAvatarError("Choose an image first.");
+        return;
+      }
+
+      setSavingAvatar(true);
+      const fileExt = avatarFile.name.split(".").pop();
+      const fileName = `${Date.now()}.${fileExt ?? "jpg"}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, avatarFile, { upsert: true });
+
+      if (uploadError) {
+        setAvatarError("Could not upload avatar. Please try again.");
+        return;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      const avatarUrl = publicUrlData.publicUrl;
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: avatarUrl },
+      });
+
+      if (updateError) {
+        setAvatarError("Avatar saved, but profile could not be updated.");
+        return;
+      }
+    } finally {
+      setSavingAvatar(false);
+    }
+  }
 
   function handleNext() {
     navigate("/preferences");
@@ -12,15 +77,42 @@ export default function Welcome() {
       <h1 className="home-page-title app-title">Bookify</h1>
 
       <section className="welcome-content">
-        <h3>Welcome to Bookify!</h3>
+        <h3>{user ? `Welcome to Bookify ${user.user_metadata.username}!` : "Profile"}</h3>
         <p>
-          An app who’s purpose is 
+          This is an app who’s purpose is 
           to help you find new books 
           that you actually like. Start 
           by setting your preferences to the kinds 
           of books you would like to find. You will 
           be able to change these whenever you feel like exploring new things.
         </p>
+      </section>
+
+      <section className="welcome-content">
+        <h3>Your avatar</h3>
+        <p>Upload an image to use as your profile picture.</p>
+        <label>
+          Choose image
+          <input type="file" accept="image/*" onChange={handleAvatarChange} />
+        </label>
+        {avatarPreview && (
+          <div style={{ marginTop: "1rem" }}>
+            <img
+              src={avatarPreview}
+              alt="Avatar preview"
+              style={{ width: 96, height: 96, borderRadius: "50%", objectFit: "cover" }}
+            />
+          </div>
+        )}
+        {avatarError && <p className="error-message">{avatarError}</p>}
+        <button
+          type="button"
+          onClick={handleSaveAvatar}
+          disabled={savingAvatar}
+          style={{ marginTop: "0.75rem" }}
+        >
+          {savingAvatar ? "Saving avatar..." : "Save avatar"}
+        </button>
       </section>
 
       <div className="bottom-nav">

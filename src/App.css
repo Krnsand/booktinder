@@ -2,6 +2,7 @@
   max-width: 1000px;
   margin: 0 auto;
   padding: 1.5rem 1rem 2rem;
+  font-family: "Montserrat", sans-serif;
 }
 
 .poiret-one-regular {
@@ -103,12 +104,13 @@
   min-width: 60px;
   min-height: 60px;
   border-radius: 50%;
-  background-color: #3a3a3a;
+  background-color: #2a2a2a;
   color: #F0E7D8;
   border: 2px solid #4a4a4a;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.8rem;
   font-weight: bold;
   cursor: pointer;
@@ -181,6 +183,13 @@
   color: #F0E7D8;           
 }
 
+.empty-library {
+  margin-top: 1rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
 .filter-section,
 .results-section {
   margin-top: 1rem;
@@ -246,6 +255,7 @@
 .page-title {
   text-align: center;
   margin: 0 auto 1rem;
+  font-family: "Montserrat", sans-serif;
 }
 
 .home-page-title {
@@ -503,6 +513,42 @@
 .profile-page {
   max-width: 600px;
   margin: 0 auto;
+}
+
+.profile-content {
+    margin-top: 1rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-preferences {
+  margin-top: 1rem;
+}
+
+.profile-preference-group {
+  margin-bottom: 1.5rem;
+}
+
+.profile-preference-group h3 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.profile-preference-group ul {
+ list-style: none;
+    display: flex;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 400px;
+    columns: 2;
+    column-gap: 1.5rem;
+    justify-content: center;
+}
+
+.profile-preference-group li {
+  break-inside: avoid;
+  padding: 0.15rem 0;
 }
 
 .library-list {

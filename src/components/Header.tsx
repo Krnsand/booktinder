@@ -5,18 +5,24 @@ export default function Header() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const initial = user?.email?.[0]?.toUpperCase() ?? "?";
+  const avatarUrl = (user as any)?.user_metadata?.avatar_url as string | undefined;
 
   const location = useLocation();
   const isNotPreferencesPage = location.pathname !== "/preferences";
   const isProfilePage = location.pathname === "/profile";
 
-  async function handleSignOutFromHeader() {
-    const confirmed = window.confirm("Are you sure you want to sign out?");
-    if (!confirmed) return;
+ async function handleSignOutFromHeader() {
+  const confirmed = window.confirm("Are you sure you want to sign out?");
+  if (!confirmed) return;
 
+  try {
     await signOut();
     navigate("/signin");
+  } catch (err) {
+    console.error("Sign out failed", err);
+    window.alert("Could not sign out. Check console for details.");
   }
+}
 
   return (
     <header className="app-header">
@@ -48,7 +54,7 @@ export default function Header() {
         )}
       </div>
       <h1 className="app-title">Bookify</h1>
-     <nav className="app-nav">
+    <nav className="app-nav">
   {isProfilePage ? (
     <button
       type="button"
@@ -63,7 +69,20 @@ export default function Header() {
       aria-label="Profile"
       onClick={() => navigate("/profile")}
     >
-      {initial}
+      {avatarUrl ? (
+        <img
+          src={avatarUrl}
+          alt={user?.user_metadata?.username ?? "Profile avatar"}
+          style={{
+            width: "100%",
+            height: "100%",
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
+        />
+      ) : (
+        initial
+      )}
     </button>
   )}
 </nav>
