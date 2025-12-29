@@ -105,7 +105,7 @@ export default function Welcome() {
           </div>
         )}
         {avatarError && <p className="error-message">{avatarError}</p>}
-        <button
+        <button className="avatar-btn"
           type="button"
           onClick={handleSaveAvatar}
           disabled={savingAvatar}
