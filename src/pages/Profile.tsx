@@ -8,7 +8,9 @@ export default function Profile() {
 
   return (
     <div className="profile-page">
-      <h1 className="page-title">Profile</h1>
+       <h1 className="page-title">
+      {user ? `Hello ${user.user_metadata.username}!` : "Profile"}
+    </h1>
       {user && <p>{user.email}</p>}
       <p>My preferences</p>
       <div className="bottom-nav">

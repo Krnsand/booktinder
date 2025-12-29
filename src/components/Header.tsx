@@ -10,13 +10,18 @@ export default function Header() {
   const isNotPreferencesPage = location.pathname !== "/preferences";
   const isProfilePage = location.pathname === "/profile";
 
-  async function handleSignOutFromHeader() {
-    const confirmed = window.confirm("Are you sure you want to sign out?");
-    if (!confirmed) return;
+ async function handleSignOutFromHeader() {
+  const confirmed = window.confirm("Are you sure you want to sign out?");
+  if (!confirmed) return;
 
+  try {
     await signOut();
     navigate("/signin");
+  } catch (err) {
+    console.error("Sign out failed", err);
+    window.alert("Could not sign out. Check console for details.");
   }
+}
 
   return (
     <header className="app-header">

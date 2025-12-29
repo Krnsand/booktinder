@@ -7,7 +7,7 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, username: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -52,15 +52,40 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (error) throw error;
   }
 
-  async function signUp(email: string, password: string) {
-    const { error } = await supabase.auth.signUp({ email, password });
+  async function signUp(email: string, password: string, username: string) {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username,
+          display_name: username,
+        },
+      },
+    });
     if (error) throw error;
   }
 
-  async function signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+ async function signOut() {
+  try {
+    const { error } = await supabase.auth.signOut({ scope: 'local' });
+
+    if (error) {
+      // Ignore the 'no active session' case – user is effectively signed out
+      if (
+        error.name === 'AuthSessionMissingError' ||
+        error.message?.toLowerCase().includes('auth session missing')
+      ) {
+        // nothing to do
+      } else {
+        throw error;
+      }
+    }
+  } finally {
+    // Make sure our app state reflects a signed-out user
+    setUser(null);
   }
+}
 
   const value: AuthContextValue = {
     user,

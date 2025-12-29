@@ -8,6 +8,7 @@ export default function Register() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -15,8 +16,8 @@ export default function Register() {
     e.preventDefault();
     setError(null);
 
-    if (!email || !password) {
-      setError('Enter email and password.');
+    if (!username || !email || !password) {
+      setError('Enter username, email and password.');
       return;
     }
 
@@ -26,7 +27,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      await signUp(email, password);
+      await signUp(email, password, username);
       navigate('/preferences');
     } catch (err: any) {
       const raw = err?.message ?? '';
@@ -48,6 +49,15 @@ export default function Register() {
     <div className="auth-page">
       <h1>Register</h1>
       <form onSubmit={handleSubmit} className="auth-form">
+        <label>
+          Username
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </label>
         <label>
           Email
           <input
