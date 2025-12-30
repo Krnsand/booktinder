@@ -33,6 +33,7 @@ export default function BookDetail() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  
 
   function getSwipedBookIds(userId: string): string[] {
     try {
@@ -192,7 +193,10 @@ const ratingsCount = info.ratingsCount;
 
       const alreadySaved = await isBookInLibrary(user.id, book.id);
       if (alreadySaved) {
-        setSaveMessage("This book has already been saved.");
+        // Redirect back to Discover and show the message there
+        navigate("/discover", {
+          state: { saveMessage: "This book has already been saved." },
+        });
         return;
       }
 
@@ -204,15 +208,21 @@ const ratingsCount = info.ratingsCount;
         thumbnail: image,
       });
 
-      setSaveMessage("Book saved to your library.");
       addSwipedBookId(user.id, book.id);
-    } catch (err: any) {
+
+      // Redirect back to Discover with a success message so the popup is
+      // visible there.
+      navigate("/discover", {
+        state: { saveMessage: "Book saved to your library." },
+      });
+    } catch (err) {
       console.error(err);
       setSaveMessage("Could not save book. Try again.");
     } finally {
       setSaving(false);
     }
   }
+
 
   return (
     <div className="book-detail-page">
