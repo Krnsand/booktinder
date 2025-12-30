@@ -238,16 +238,22 @@ export default function Discover() {
     setCurrentIndex(0);
   }
 
-  function triggerSwipe(direction: "left" | "right", afterSwipe: () => void) {
-    if (!currentBook) return;
-    const bookId = currentBook.id;
-    setSwipeState({ direction, bookId });
+function triggerSwipe(direction: "left" | "right", afterSwipe: () => void) {
+  if (!currentBook) return;
+  const bookId = currentBook.id;
 
-    setTimeout(() => {
-      afterSwipe();
-      setSwipeState(null);
-    }, 300);
-  }
+  setSwipeState({ direction, bookId });
+
+  setTimeout(() => {
+    afterSwipe();
+
+    setSwipeState(null);
+    setDragStartX(null);
+    setDragDeltaX(0);
+    setIsDragging(false);
+  }, 300);
+}
+
 
   function handleSkipCurrent() {
     if (!currentBook) return;
@@ -327,33 +333,28 @@ export default function Discover() {
     }
   }
 
-  function handleTouchEnd() {
-    if (dragStartX === null || !currentBook || swipeState) {
-      setDragStartX(null);
-      setDragDeltaX(0);
-      setIsDragging(false);
-      return;
-    }
+ function handleTouchEnd() {
+  if (dragStartX === null || !currentBook || swipeState) {
+    return;
+  }
 
-    const delta = dragDeltaX;
+  const delta = dragDeltaX;
+
+  if (Math.abs(delta) < swipeDragThreshold) {
     setDragStartX(null);
     setDragDeltaX(0);
-
-    if (Math.abs(delta) < swipeDragThreshold) {
-      setIsDragging(false);
-      return;
-    }
-
-    if (delta < 0) {
-      // swipe left = skip
-      handleSkipCurrent();
-    } else {
-      // swipe right = save
-      handleSaveCurrent();
-    }
-
     setIsDragging(false);
+    return;
   }
+
+  if (delta < 0) {
+    handleSkipCurrent();
+  } else {
+    handleSaveCurrent();
+  }
+
+}
+
 
   return (
     <div className="discover-page">
