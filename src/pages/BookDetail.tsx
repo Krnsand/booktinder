@@ -195,7 +195,6 @@ const ratingsCount = info.ratingsCount;
     if (alreadySaved) {
       setSaveMessage("This book has already been saved.");
 
-      // Redirect back to Discover
       navigate("/discover");
       return;
     }
@@ -216,7 +215,6 @@ const ratingsCount = info.ratingsCount;
 
     addSwipedBookId(user.id, book.id);
 
-    // ✅ Redirect after successful save
     navigate("/discover");
 
   } catch (err) {
