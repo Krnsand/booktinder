@@ -49,12 +49,18 @@
 
 .app-title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-family: "Cinzel Decorative", serif;
   font-weight: 400;
   color: #F0E7D8;
   text-align: center;
   grid-column: 2;
+}
+
+@media (max-width: 350px) {
+  .app-title {
+    font-size: 1.5rem;
+  }
 }
 
 .header-left {
@@ -70,8 +76,8 @@
 }
 
 .icon-button {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   min-width: 60px;
   min-height: 60px;
   background: #2a2a2a;
@@ -124,6 +130,30 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.profile-icon-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+@media (max-width: 1000px) {
+  .profile-icon-button {
+    width: 40px;
+    height: 40px;
+  }
+  .icon-button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* No extra desktop breakpoint needed: base size is large, and the
+   max-width: 1000px rule above shrinks them on smaller screens. */
+
 .bottom-nav {
   position: fixed;
   bottom: 1rem;
@@ -140,15 +170,6 @@
 }
 
 
-.profile-icon-button {
-  width: 32px;
-  height: 32px;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
 
 .discover-page,
 .book-detail-page {
@@ -339,6 +360,33 @@
 
 }
 
+@media (max-width: 600px) {
+  /* Library cards: slightly smaller text and tighter layout on small screens */
+  .library-card {
+    grid-template-columns: auto 1fr auto;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .library-card-main h2 {
+    font-size: 0.9rem;
+  }
+
+  .library-card-main p {
+    font-size: 0.8rem;
+  }
+
+  .status-icon {
+    font-size: 1.1rem;
+  }
+
+  /* Make the 'Select multiple' and related bulk actions buttons smaller */
+  .library-actions button,
+  .delete-multiple-btn {
+    font-size: 0.85rem;
+    padding: 0.25em 0.6em;
+  }
+}
+
 .book-item {
   padding: 0.75rem 1rem;
   border-radius: 8px;
@@ -511,13 +559,6 @@
   margin-bottom: 4rem;
 }
 
-@media (min-width: 768px) {
-  .book-detail-content {
-    flex-direction: row;
-    align-items: flex-start;
-  }
-}
-
 .profile-page {
   max-width: 600px;
   margin: 0 auto;
@@ -602,6 +643,14 @@
   color: #4b5563;
 }
 
+/* Re-apply mobile sizing after the base rule so it takes effect on small
+   screens even though the base h2 rule comes later in the file. */
+@media (max-width: 600px) {
+  .library-card-main h2 {
+    font-size: 0.9rem;
+  }
+}
+
 .library-card-status {
   display: flex;
   align-items: center;
@@ -627,7 +676,7 @@
 }
 
 .menu-button {
-  padding: 0.4rem 0.7rem;
+  padding: 0;
   font-size: 2rem;
   font-weight: 550;
 }
