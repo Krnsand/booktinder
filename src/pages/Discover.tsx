@@ -12,8 +12,8 @@ export default function Discover() {
   const location = useLocation();
   const { user } = useAuth();
 
-  const locationState = (location.state as { 
-    books?: any[]; 
+  const locationState = (location.state as {
+    books?: any[];
     currentIndex?: number;
     preferences?: {
       genres?: string[];
@@ -22,13 +22,16 @@ export default function Discover() {
       representation?: string[];
       authors?: string[];
       formats?: string[];
-  };
- }) || {};
+    };
+    saveMessage?: string;
+  }) || {};
 
   const [books, setBooks] = useState(locationState.books ?? []);
   const [currentIndex, setCurrentIndex] = useState(locationState.currentIndex ?? 0);
   const [saving, setSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [saveMessage, setSaveMessage] = useState<string | null>(
+    locationState.saveMessage ?? null
+  );
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<{
@@ -47,6 +50,17 @@ export default function Discover() {
   const [dragDeltaX, setDragDeltaX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [randomLoadCount, setRandomLoadCount] = useState(0);
+
+
+  useEffect(() => {
+    if (!saveMessage) return;
+
+    const timeoutId = setTimeout(() => {
+      setSaveMessage(null);
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, [saveMessage]);
 
   function getSwipedBookIds(userId: string): string[] {
     try {

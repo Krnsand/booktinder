@@ -184,46 +184,44 @@ const ratingsCount = info.ratingsCount;
     navigate("/library");
   }
 
- async function handleSaveCurrent() {
-  if (!user || !book) return;
+  async function handleSaveCurrent() {
+    if (!user || !book) return;
 
-  try {
-    setSaving(true);
-    setSaveMessage(null);
+    try {
+      setSaving(true);
+      setSaveMessage(null);
 
-    const alreadySaved = await isBookInLibrary(user.id, book.id);
-    if (alreadySaved) {
-      setSaveMessage("This book has already been saved.");
+      const alreadySaved = await isBookInLibrary(user.id, book.id);
+      if (alreadySaved) {
+        // Redirect back to Discover and show the message there
+        navigate("/discover", {
+          state: { saveMessage: "This book has already been saved." },
+        });
+        return;
+      }
 
-      navigate("/discover");
-      return;
+      await addToLibrary({
+        userId: user.id,
+        googleVolumeId: book.id,
+        title: info.title,
+        authors: info.authors,
+        thumbnail: image,
+      });
+
+      addSwipedBookId(user.id, book.id);
+
+      // Redirect back to Discover with a success message so the popup is
+      // visible there.
+      navigate("/discover", {
+        state: { saveMessage: "Book saved to your library." },
+      });
+    } catch (err) {
+      console.error(err);
+      setSaveMessage("Could not save book. Try again.");
+    } finally {
+      setSaving(false);
     }
-
-    await addToLibrary({
-      userId: user.id,
-      googleVolumeId: book.id,
-      title: info.title,
-      authors: info.authors,
-      thumbnail: image,
-    });
-
-    setSaveMessage("Book saved to your library.");
-
-    setTimeout(() => {
-      navigate("/discover");
-    }, 400);
-
-    addSwipedBookId(user.id, book.id);
-
-    navigate("/discover");
-
-  } catch (err) {
-    console.error(err);
-    setSaveMessage("Could not save book. Try again.");
-  } finally {
-    setSaving(false);
   }
-}
 
 
   return (
