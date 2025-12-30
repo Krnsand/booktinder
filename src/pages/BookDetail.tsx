@@ -33,6 +33,7 @@ export default function BookDetail() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  
 
   function getSwipedBookIds(userId: string): string[] {
     try {
@@ -183,36 +184,49 @@ const ratingsCount = info.ratingsCount;
     navigate("/library");
   }
 
-  async function handleSaveCurrent() {
-    if (!user || !book) return;
+ async function handleSaveCurrent() {
+  if (!user || !book) return;
 
-    try {
-      setSaving(true);
-      setSaveMessage(null);
+  try {
+    setSaving(true);
+    setSaveMessage(null);
 
-      const alreadySaved = await isBookInLibrary(user.id, book.id);
-      if (alreadySaved) {
-        setSaveMessage("This book has already been saved.");
-        return;
-      }
+    const alreadySaved = await isBookInLibrary(user.id, book.id);
+    if (alreadySaved) {
+      setSaveMessage("This book has already been saved.");
 
-      await addToLibrary({
-        userId: user.id,
-        googleVolumeId: book.id,
-        title: info.title,
-        authors: info.authors,
-        thumbnail: image,
-      });
-
-      setSaveMessage("Book saved to your library.");
-      addSwipedBookId(user.id, book.id);
-    } catch (err: any) {
-      console.error(err);
-      setSaveMessage("Could not save book. Try again.");
-    } finally {
-      setSaving(false);
+      // Redirect back to Discover
+      navigate("/discover");
+      return;
     }
+
+    await addToLibrary({
+      userId: user.id,
+      googleVolumeId: book.id,
+      title: info.title,
+      authors: info.authors,
+      thumbnail: image,
+    });
+
+    setSaveMessage("Book saved to your library.");
+
+    setTimeout(() => {
+      navigate("/discover");
+    }, 400);
+
+    addSwipedBookId(user.id, book.id);
+
+    // ✅ Redirect after successful save
+    navigate("/discover");
+
+  } catch (err) {
+    console.error(err);
+    setSaveMessage("Could not save book. Try again.");
+  } finally {
+    setSaving(false);
   }
+}
+
 
   return (
     <div className="book-detail-page">
