@@ -34,8 +34,9 @@ export default function BookCard({
       {item.thumbnail && (
         <img
           src={item.thumbnail}
-          alt={""}
+          alt={item.title ?? "Book cover"}
           className="library-card-cover"
+          loading="lazy"
         />
       )}
       <div className="library-card-main">

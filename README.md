@@ -1,4 +1,4 @@
-# React + TypeScript + Vite
+<!-- # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
@@ -85,7 +85,7 @@ enklare att läsa koden
 snabbare att skriva UI
 
 Kortaste förklaringen:
-JSX är HTML-liknande kod som man skriver direkt i JavaScript när man bygger React-appar. Det är fortfarande JavaScript — det bara ser ut som HTML för att göra det enklare att jobba med.
+JSX är HTML-liknande kod som man skriver direkt i JavaScript när man bygger React-appar. Det är fortfarande JavaScript — det bara ser ut som HTML för att göra det enklare att jobba med. -->
 
 
 # Checklist: Requirements for G and VG
@@ -93,41 +93,41 @@ JSX är HTML-liknande kod som man skriver direkt i JavaScript när man bygger Re
 ## G-Level Requirements (MUST)
 
 ### Planning & Research
-- [ ] Documented target group analysis (personas, needs, scenarios)
-- [ ] Use GitHub Projects / Trello / Linear for backlog & issues
-- [ ] Kanban board visible in the repository
+- [X] Documented target group analysis (personas, needs, scenarios)
+- [X] Use GitHub Projects / Trello / Linear for backlog & issues
+- [X] Kanban board visible in the repository
 
 ### Design & Prototyping
-- [ ] Wireframes & prototype in Figma (desktop + mobile)
-- [ ] Responsive design (minimum mobile + desktop)
-- [ ] Basic WCAG 2.1 A (semantic HTML, alt text, contrast)
+- [X] Wireframes & prototype in Figma (desktop + mobile)
+- [X] Responsive design (minimum mobile + desktop)
+- [X] Basic WCAG 2.1 A (semantic HTML, alt text, contrast)
 - [ ] Documented accessibility measures
 
 ### Application Development
-- [ ] Built with React (Vite/CRA)
-- [ ] Database (Supabase or Firestore) with CRUD functionality
-- [ ] State management (Zustand or React Context)
-- [ ] Dynamic components (swipe UI, filters, library)
-- [ ] Semantic HTML and basic WCAG implementation
-- [ ] Responsive web app (mobile + desktop)
+- [X] Built with React (Vite/CRA)
+- [X] Database (Supabase or Firestore) with CRUD functionality
+- [X] State management (Zustand or React Context)
+- [X] Dynamic components (swipe UI, filters, library)
+- [X] Semantic HTML and basic WCAG implementation
+- [X] Responsive web app (mobile + desktop)
 
 ### README & Version Control
-- [ ] GitHub repo with clear commit history
-- [ ] README with setup instructions
-- [ ] Public link + checklist included in README
+- [X] GitHub repo with clear commit history
+- [X] README with setup instructions
+- [X] Public link + checklist included in README
 
 ### Final Report
-- [ ] 2–3 page written report
-- [ ] Includes abstract (English), tech stack, process, planning & research
+- [X] 2–3 page written report
+- [X] Includes abstract (English), tech stack, process, planning & research
 
 ### Deploy
-- [ ] Public deployment (Netlify, Vercel, or Firebase Hosting)
-- [ ] Working public link in README
+- [X] Public deployment (Netlify, Vercel, or Firebase Hosting)
+- [X] Working public link in README
 
 ### Overall Quality
-- [ ] No crashes or dead links
-- [ ] Consistent design system
-- [ ] Complete navigation and user flow
+- [X] No crashes or dead links
+- [X] Consistent design system
+- [X] Complete navigation and user flow
 
 
 ---
@@ -135,25 +135,25 @@ JSX är HTML-liknande kod som man skriver direkt i JavaScript när man bygger Re
 ## VG-Level Requirements (EXTRA)
 
 ### Design & Prototyping (VG)
-- [ ] Interactive prototype in Figma (clickable)
+- [X] Interactive prototype in Figma (clickable)
 - [ ] Full WCAG 2.1 A + AA
-- [ ] All WebAIM WAVE errors and warnings fixed
+- [X] All WebAIM WAVE errors and warnings fixed
 
 ### Application Development (VG)
 - [ ] Global state via Redux (or similar)
-- [ ] Full CRUD with secure data handling
-- [ ] Authentication (Firebase Auth / OAuth / JWT)
+- [X] Full CRUD with secure data handling
+- [X] Authentication (Firebase Auth / OAuth / JWT)
 - [ ] Performance optimization (lazy loading, code-splitting, image compression)
-- [ ] Fully responsive from mobile → tablet → desktop
+- [X] Fully responsive from mobile → tablet → desktop
 
 ### Version Control & Workflow (VG)
-- [ ] Feature branches + pull requests
-- [ ] Clear commit messages
-- [ ] Documented workflow in repository
+- [X] Feature branches + pull requests
+- [X] Clear commit messages
+- [X] Documented workflow in repository
 
 ### Deploy (VG)
-- [ ] CI/CD pipeline (GitHub Actions or similar)
-- [ ] Automatic deploy on merge to main
+- [X] CI/CD pipeline (GitHub Actions or similar)
+- [X] Automatic deploy on merge to main
 
 ### Final Report (VG)
 - [ ] 3–6 pages
