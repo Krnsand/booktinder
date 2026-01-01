@@ -36,13 +36,38 @@ export default function Welcome() {
       }
 
       setSavingAvatar(true);
-      const fileExt = avatarFile.name.split(".").pop();
-      const fileName = `${Date.now()}.${fileExt ?? "jpg"}`;
+      // Resize avatar on the client to avoid uploading huge source images.
+      const imageBitmap = await createImageBitmap(avatarFile);
+      const maxSize = 400;
+      const scale = Math.min(maxSize / imageBitmap.width, maxSize / imageBitmap.height, 1);
+      const targetWidth = Math.round(imageBitmap.width * scale);
+      const targetHeight = Math.round(imageBitmap.height * scale);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        setAvatarError("Could not process image. Please try a different file.");
+        return;
+      }
+      ctx.drawImage(imageBitmap, 0, 0, targetWidth, targetHeight);
+
+      const resizedBlob: Blob | null = await new Promise((resolve) =>
+        canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.8)
+      );
+
+      if (!resizedBlob) {
+        setAvatarError("Could not process image. Please try again.");
+        return;
+      }
+
+      const fileName = `${Date.now()}.jpg`;
       const filePath = `${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, avatarFile, { upsert: true });
+        .upload(filePath, resizedBlob, { upsert: true });
 
       if (uploadError) {
         setAvatarError("Could not upload avatar. Please try again.");
