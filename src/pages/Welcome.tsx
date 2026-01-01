@@ -36,7 +36,6 @@ export default function Welcome() {
       }
 
       setSavingAvatar(true);
-      // Resize avatar on the client to avoid uploading huge source images.
       const imageBitmap = await createImageBitmap(avatarFile);
       const maxSize = 400;
       const scale = Math.min(maxSize / imageBitmap.width, maxSize / imageBitmap.height, 1);
