@@ -171,3 +171,5 @@ design på flera enheter och webbläsare.
 De sista procenten på Lighthouse är på grund av bildstorlekar på bokomslagen som hämtas från Google Books API, jag kan ej påverka dessa. Det är också en del nätverkstörningar som gör laddningarna långsammare.
 
 ![WAVE results](https://github.com/Krnsand/booktinder/blob/main/src/assets/Wave.png)
+
+---
