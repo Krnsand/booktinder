@@ -1,11 +1,11 @@
 # Bookify
-En bokrekomendationsapp med enkelt och engegerande swipegränssnitt.
+Bookify är en app som hjälper användare att hitta nya böcker genom ett swipe-baserat gränssnitt inspirerat av moderna matchmaking-appar, såsom Tinder. Användaren kan filtrera böcker baserat på preferenser som genre, stämning, tropes, skrivstil och representation, samt swipa för att gilla eller avfärda föreslagna titlar. Gillade böcker sparas i ett personligt bibliotek där användaren enkelt kan hålla koll på framtida läsning, markera böcker som ”Lästa” eller ”Favoriter” samt ta bort en eller flera böcker vid behov.
 
 ![Responsive Mockup](https://github.com/Krnsand/booktinder/blob/main/src/assets/amIresponsive.png)
 
 [Live Website](https://bookify-lime-one.vercel.app/)
 
-Appen är designnad utifrån darkmode, så bästa resultat får man om man har det aktiverat. Jag har tagit upp detta i en del av min rapport då det har varit problem med att ställa in fungerande färger för både Apple och Android. 
+Appen är designad utifrån darkmode, så bästa resultat får man om man har det aktiverat. Jag har tagit upp detta i en del av min rapport då det har varit problem med att ställa in fungerande färger för både Apple och Android i darkmode vs lightmode. 
 
 
 
@@ -41,10 +41,22 @@ Dessa används i supabaseClient.ts för att koppla appen till rätt backend.
    - Spara böcker till biblioteket.
    - Ta bort böcker från Library.
    - Ändra avatar och se att den uppdateras i headern och på Profile.
+  
+## Teknik & verktyg
+
+Projektet är byggt med React och TypeScript. Reacts komponentbaserade struktur gör det enkelt att återanvända UI-komponenter och hålla koden organiserad. Den goda dokumentationen gjorde utvecklingen smidigare.
+
+TypeScript används för bättre typsäkerhet, vilket minskar risken för buggar när data skickas mellan komponenter. Det gav även tydligare felmeddelanden och bättre autocomplete, särskilt vid arbete med externa API:er.
+
+Backend är byggd med Supabase, som används för autentisering, databas och lagring av användardata. Detta gjorde projektet snabbt och enkelt att sätta upp.
+
+Applikationen är deployad med Vercel, vilket ger enkel deployment och preview-versioner per branch för att upptäcka fel innan ändringar publiceras.
+
+--- 
 
 # Checklista: Krav för G och VG
 
-## G-nivå (MÅSTE)
+## G-nivå 
 För att du ska få Godkänt (G) på ditt examensarbete, behöver du uppfylla samtliga kursmål och
 krav som nämnts i uppgiften. Här är en översikt av vad du ska uppnå för G:
 
