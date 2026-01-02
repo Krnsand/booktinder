@@ -5,6 +5,8 @@ En bokrekomendationsapp med enkelt och engegerande swipegränssnitt.
 
 [Live Website](https://bookify-lime-one.vercel.app/)
 
+Appen är designnad utifrån darkmode, så bästa resultat får man om man har det aktiverat. Jag har tagit upp detta i en del av min rapport då det har varit problem med att ställa in fungerande färger för både Apple och Android. 
+
 
 
 ## Instruktioner om tekniska förberedelser och hur projektet körs
