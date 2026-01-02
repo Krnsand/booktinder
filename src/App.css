@@ -155,8 +155,6 @@
   }
 }
 
-/* No extra desktop breakpoint needed: base size is large, and the
-   max-width: 1000px rule above shrinks them on smaller screens. */
 
 .bottom-nav {
   position: fixed;
@@ -174,7 +172,6 @@
 }
 
 
-
 .discover-page,
 .book-detail-page {
   max-width: 1000px;
@@ -189,7 +186,7 @@
 
 .filtration {
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 0 auto 6rem;
   padding: 0 15%;
   text-align: left;
 }
@@ -260,6 +257,27 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+@media (min-width: 700px) {
+  .filtration {
+    padding: 0 18%;
+  }
+
+  .filter-dropdown-toggle {
+    font-size: 2rem;
+    padding: 0.85rem 0;
+  }
+
+  .genre-item {
+    font-size: 1.2rem;
+  }
+
+  .genre-item input {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
 }
 
 .discover-current-book {
