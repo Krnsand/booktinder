@@ -149,7 +149,7 @@ const ratingsCount = info.ratingsCount;
   const cleanDescription = (() => {
     const raw = (info as any).description as string | undefined;
     if (!raw) return "";
-    // Remove basic HTML tags like <p>, <i>, <br>, etc.
+  
     return raw.replace(/<[^>]+>/g, "");
   })();
 
@@ -193,7 +193,6 @@ const ratingsCount = info.ratingsCount;
 
       const alreadySaved = await isBookInLibrary(user.id, book.id);
       if (alreadySaved) {
-        // Redirect back to Discover and show the message there
         navigate("/discover", {
           state: { saveMessage: "This book has already been saved." },
         });
@@ -210,8 +209,6 @@ const ratingsCount = info.ratingsCount;
 
       addSwipedBookId(user.id, book.id);
 
-      // Redirect back to Discover with a success message so the popup is
-      // visible there.
       navigate("/discover", {
         state: { saveMessage: "Book saved to your library." },
       });
