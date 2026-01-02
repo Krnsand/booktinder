@@ -1,167 +1,156 @@
-<!-- # React + TypeScript + Vite
+# Bookify
+En bokrekomendationsapp med enkelt och engegerande swipegränssnitt.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Responsive Mockup](https://github.com/Krnsand/island-adventure/blob/main/assets/images/responsive.png)
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-JSX är ett syntax-tillägg till JavaScript som låter mig skriva HTML-liknande kod direkt i React-komponenter. Det gör UI-utveckling snabbare, tydligare och mer intuitiv.
-
-Varför används JSX?
-
-För att det gör det:
-
-lättare att bygga upp sidor och komponenter
-
-enklare att läsa koden
-
-snabbare att skriva UI
-
-Kortaste förklaringen:
-JSX är HTML-liknande kod som man skriver direkt i JavaScript när man bygger React-appar. Det är fortfarande JavaScript — det bara ser ut som HTML för att göra det enklare att jobba med. -->
+[Live Website](https://bookify-lime-one.vercel.app/)
 
 
-# Checklist: Requirements for G and VG
 
-## G-Level Requirements (MUST)
+## Instruktioner om tekniska förberedelser och hur projektet körs
+- Förutsättningar
+  - Node.js (version 18 eller senare rekommenderas)
+  - npm (följer normalt med Node)
+  - Ett Supabase-projekt med:
+    - Auth aktiverat
+    - Databastabeller för användare, bibliotek och preferenser
+    - Storage-bucket för avatar-bilder
+  - En .env-fil med relevanta Supabase-nycklar
+- Installera beroenden Klona projektet och installera alla paket:
+  - npm install
+- Starta utvecklingsserver:
+  - npm run dev
+- Öppna sedan adressen som visas i terminalen, t.ex.:
+  - http://localhost:5173
+- När du sparar filer uppdateras sidan automatiskt (hot reload).
 
-### Planning & Research
-- [X] Documented target group analysis (personas, needs, scenarios)
-- [X] Use GitHub Projects / Trello / Linear for backlog & issues
-- [X] Kanban board visible in the repository
+- Konfiguration av miljövariabler Skapa en .env-fil i projektroten (samma nivå som package.json) och fyll i dina egna värden:  
+  - VITE_SUPABASE_URL
+  - VITE_SUPABASE_ANON_KEY
 
-### Design & Prototyping
-- [X] Wireframes & prototype in Figma (desktop + mobile)
-- [X] Responsive design (minimum mobile + desktop)
-- [X] Basic WCAG 2.1 A (semantic HTML, alt text, contrast)
-- [ ] Documented accessibility measures
+Dessa används i supabaseClient.ts för att koppla appen till rätt backend.
 
-### Application Development
-- [X] Built with React (Vite/CRA)
-- [X] Database (Supabase or Firestore) with CRUD functionality
-- [X] State management (Zustand or React Context)
-- [X] Dynamic components (swipe UI, filters, library)
-- [X] Semantic HTML and basic WCAG implementation
-- [X] Responsive web app (mobile + desktop)
+- Test av inloggning och funktionalitet
+1. Registrera en ny användare via Register-sidan.
+2. Bekräfta e-post enligt instruktionerna från Supabase.
+3. Logga in, ladda upp en avatar på Welcome-sidan och spara preferenser på Preferences.
+4. Testa att:
+   - Swipa böcker på Discover.
+   - Spara böcker till biblioteket.
+   - Ta bort böcker från Library.
+   - Ändra avatar och se att den uppdateras i headern och på Profile.
 
-### README & Version Control
-- [X] GitHub repo with clear commit history
-- [X] README with setup instructions
-- [X] Public link + checklist included in README
+# Checklista: Krav för G och VG
 
-### Final Report
-- [X] 2–3 page written report
-- [X] Includes abstract (English), tech stack, process, planning & research
+## G-nivå (MÅSTE)
+För att du ska få Godkänt (G) på ditt examensarbete, behöver du uppfylla samtliga kursmål och
+krav som nämnts i uppgiften. Här är en översikt av vad du ska uppnå för G:
+
+### Planering & research
+- [X] Utföra en noggrann målgruppsanalys
+- [X] Använda ett projekthanteringsverktyg för backlog, till exempel Linear, Trello, Jira,
+Github projects eller något liknande verktyg, för att strukturera arbetet
+
+### Design & prototyp
+- [X] Skapa wireframes och prototyp i Figma som följer UX/UI-principer
+- [X] Se till att designen är responsiv för minst två olika skärmstorlekar och följer
+WCAG 2.1-standarder.
+
+### Applikationsutveckling
+- [X] Utveckla med ett modernt JavaScript-ramverk.
+- [X] Använd en databas för lagring och hämtning av data.
+- [X] Implementera state-hantering och skapa dynamiska komponenter med
+reaktivitet och interaktivitet.
+- [X] Följa WCAG 2.1-standarder och använda semantisk HTML.
+- [X] För webbapp: Produkten ska vara responsiv och fungera korrekt på minst två
+skärmstorlekar, till exempel mobil och dator. Gränssnittet ska anpassa sig för
+att ge en användarvänlig upplevelse på båda dessa enheter.
+- [X] README-fil med innehåll enligt projektbeskrivningen (info om hur projektet körs,
+publik länk, checklista med betygskriterier ni uppfyllt)
+
+### Versionshantering
+- [X] GitHub-repo med tydlig commit-historik
+- [X] README med installations- och körinstruktioner
+- [X] Publik länk + checklista inkluderad i README
+
+### Slutrapport, skriv en 2-3 sidor lång rapport med:
+- [X] Abstract på engelska
+- [X] Tech stack och motivering av valen
+- [X] Dokumentation av arbetsprocess, planering och research
 
 ### Deploy
-- [X] Public deployment (Netlify, Vercel, or Firebase Hosting)
-- [X] Working public link in README
+- [X] Ditt projekt ska vara hostat och publikt tillgängligt för att kunna visas i en
+webbläsare eller simulator.
+- [X] Fungerande publik länk i README
 
-### Overall Quality
-- [X] No crashes or dead links
-- [X] Consistent design system
-- [X] Complete navigation and user flow
+### Övergripande kvalitet
+- [X] Inga krascher eller döda länkar
+- [X] Enhetligt designsystem
+- [X] Komplett navigation och användarflöde
 
 
 ---
 
-## VG-Level Requirements (EXTRA)
+## VG-nivå 
+För att du ska nå Väl Godkänt (VG) på ditt examensarbete, krävs det att du visar på en djupare
+förståelse, professionell kvalitet och avancerade tekniska lösningar. Här är specifika åtgärder
+du kan vidta i varje del av projektet för att uppnå detta:
 
-### Design & Prototyping (VG)
-- [X] Interactive prototype in Figma (clickable)
-- [ ] Full WCAG 2.1 A + AA
-- [X] All WebAIM WAVE errors and warnings fixed
+- [X] Allt för Godkänt (G)
 
-### Application Development (VG)
-- [ ] Global state via Redux (or similar)
-- [X] Full CRUD with secure data handling
-- [X] Authentication (Firebase Auth / OAuth / JWT)
-- [ ] Performance optimization (lazy loading, code-splitting, image compression)
-- [X] Fully responsive from mobile → tablet → desktop
+### Design & prototyp (VG)
+- [X] Interaktiv prototyp i Figma (klickbar)
+- [X] Prototypen ska vara väldigt lik den färdiga produkten
+- [X] Full WCAG 2.1 nivå A + AA
+- [X] Alla WebAIM WAVE-fel och varningar åtgärdade
 
-### Version Control & Workflow (VG)
-- [X] Feature branches + pull requests
-- [X] Clear commit messages
-- [X] Documented workflow in repository
+### Applikationsutveckling (VG)
+- [X] Använd en state management-lösning som till exempel Redux eller Pinia för att
+hantera global state i applikationen. (React context)
+- [X] Koden följer, utan undantag, WCAG 2.1-standarder för nivå A och AA.
+  - Testad i verktyget WebAIM WAVE utan fel på error- och varnings-nivåer.
+- [X] Optimering - Produkten ska vara optimerad och ha tillräckligt stora filfomrat,
+återanvända kod och komponenter samt använda optimeringstekniker där det
+behövs.
+- [X] Implementera CRUD-operationer, Create, Read, Update, Delete, med säker
+hantering av användardata.
+- [X] Implementera en säker autentiseringslösning för databasen, till exempel OAuth,
+JWT (JSON Web Tokens) eller Firebase Authentication, för att säkerställa att
+endast behöriga användare kan få åtkomst till och hantera data. Detta skyddar
+användardata genom att verifiera identiteten innan CRUD-operationer tillåts.
+- [X] För webbapp: Produkten ska vara fullt responsiv och anpassa sig dynamiskt till
+olika skärmstorlekar och enheter, från mobiltelefoner till större skärmar.
+Gränssnittet ska ge en optimal användarupplevelse oavsett enhet, med korrekt
+layout och funktionalitet för både små och stora skärmar.
+- [X] Skriv en tydlig README som inte bara beskriver projektet och hur det körs, men
+som också förklarar projektets tekniska val och hur olika funktioner
+implementerats
+
+### Versionshantering & arbetsflöde (VG)
+- [X] Arbeta med feature branches och gör pull requests innan du mergar till
+baskoden för att säkerställa ordning och spårbarhet.
+- [X] Dokumentera varje steg i din commit-historik med tydliga och informativa
+commit-meddelanden
 
 ### Deploy (VG)
-- [X] CI/CD pipeline (GitHub Actions or similar)
-- [X] Automatic deploy on merge to main
+- [X] Automatiserat flöde för bygge och deploy av applikationen, där byggprocessen
+automatiskt triggar publicering till en produktionsmiljö utan manuell
+inblandning, vilket säkerställer effektivitet och kontinuerlig leverans.
 
-### Final Report (VG)
-- [ ] 3–6 pages
-- [ ] Deep process analysis, challenges & solutions
-- [ ] Motivation for chosen technologies
-- [ ] Documented results from performance & accessibility tests
+### Slutrapport, genomför en djupgående analys i slutrapporten, 3-6 A4 sidor (VG)
+- [X] I rapporten, gå igenom varje steg i din arbetsprocess och reflektera över de
+utmaningar du stött på. Beskriv hur du överkommit tekniska och
+designrelaterade hinder och vad du lärt dig
+- [X] Inkludera detaljer om de verktyg och tekniker du använt, och varför du valt dessa
+över andra alternativ, till exempel varför du valde React istället för Vue
+- [X] Förklara och motivera dina beslut inom UX/UI-design och tillgänglighet, och hur
+dessa har förbättrat användarupplevelsen.
 
-### Overall Quality (VG)
-- [ ] Lighthouse performance & accessibility tests documented
-- [ ] Keyboard navigation + accessibility testing completed
-- [ ] List of implemented improvements included
+### Helhetsupplevelsen (VG)
+- [X] Helhetsupplevelsen: Applikationen ska, utöver att uppfylla G-kraven, erbjuda en
+professionell och optimerad användarupplevelse med minimala laddningstider, tydlig
+återkoppling vid alla användarinteraktioner samt vara testad för enhetlig funktion och
+design på flera enheter och webbläsare.
+
+![Lighthouse overall score](https://github.com/Krnsand/island-adventure/blob/main/assets/images/responsive.png)
+![WAVE results](https://github.com/Krnsand/island-adventure/blob/main/assets/images/responsive.png)

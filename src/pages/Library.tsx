@@ -136,26 +136,25 @@ export default function Library() {
       {!loading && !error && items.length > 0 && (
         <div className="library-header-row">
           <div className="library-sort">
-            <label>
-              Sort by:{" "}
-              <select
-                value={sortMode}
-                onChange={(e) =>
-                  setSortMode(
-                    e.target.value as
-                      | "none"
-                      | "alpha"
-                      | "favorites"
-                      | "has_read"
-                  )
-                }
-              >
-                <option value="none">Clear filter</option>
-                <option value="alpha">Alphabetical (title)</option>
-                <option value="favorites">Favorites</option>
-                <option value="has_read">Has read</option>
-              </select>
-            </label>
+            <label htmlFor="library-sort-select">Sort by:</label>{" "}
+            <select
+              id="library-sort-select"
+              value={sortMode}
+              onChange={(e) =>
+                setSortMode(
+                  e.target.value as
+                    | "none"
+                    | "alpha"
+                    | "favorites"
+                    | "has_read"
+                )
+              }
+            >
+              <option value="none">Clear filter</option>
+              <option value="alpha">Alphabetical (title)</option>
+              <option value="favorites">Favorites</option>
+              <option value="has_read">Has read</option>
+            </select>
           </div>
           <div className="library-actions">
             {!multiSelectEnabled && (
