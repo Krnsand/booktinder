@@ -171,6 +171,24 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
+@media (min-width: 700px) {
+  .bottom-nav {
+    gap: 6rem;
+  }
+
+  /* Make all icon buttons larger on bigger screens */
+  .icon-button,
+  .profile-icon-button {
+    width: 60px;
+    height: 60px;
+  }
+
+  /* Increase SVG icon size inside circular buttons */
+  .icon-button svg {
+    width: 28px;
+    height: 28px;
+  }
+}
 
 .discover-page,
 .book-detail-page {
@@ -581,6 +599,23 @@
   font-size: 0.95rem;
   line-height: 1.5;
   margin-bottom: 4rem;
+}
+
+@media (min-width: 700px) {
+  .book-detail-info h1 {
+    font-size: 2.5rem;
+    text-shadow: #14102D 1px 1px 2px;
+}
+.book-detail-meta {
+  font-size: 1.4rem;
+}
+  .book-detail-description h2 {
+  font-size: 2.2rem;
+}
+
+.book-detail-description p {
+  font-size: 1.5rem;
+}
 }
 
 .profile-page {
