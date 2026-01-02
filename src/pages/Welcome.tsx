@@ -101,7 +101,7 @@ export default function Welcome() {
       <h1 className="home-page-title app-title">Bookify</h1>
 
       <section className="welcome-content">
-        <h3>{user ? `Welcome to Bookify ${user.user_metadata.username}!` : "Profile"}</h3>
+        <h2>{user ? `Welcome to Bookify ${user.user_metadata.username}!` : "Profile"}</h2>
         <p>
           This is an app who’s purpose is 
           to help you find new books 
