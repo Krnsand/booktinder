@@ -71,18 +71,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const { error } = await supabase.auth.signOut({ scope: 'local' });
 
     if (error) {
-      // Ignore the 'no active session' case – user is effectively signed out
       if (
         error.name === 'AuthSessionMissingError' ||
         error.message?.toLowerCase().includes('auth session missing')
       ) {
-        // nothing to do
       } else {
         throw error;
       }
     }
   } finally {
-    // Make sure our app state reflects a signed-out user
     setUser(null);
   }
 }

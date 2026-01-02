@@ -309,6 +309,10 @@
   padding: 0 4%;
 }
 
+.welcome-content h2 {
+  font-size: 1.4rem;
+}
+
 .avatar-btn {
   margin-bottom: 5rem;
 }
@@ -365,7 +369,6 @@
 }
 
 @media (max-width: 600px) {
-  /* Library cards: slightly smaller text and tighter layout on small screens */
   .library-card {
     grid-template-columns: auto 1fr auto;
     padding: 0.6rem 0.75rem;
@@ -383,7 +386,6 @@
     font-size: 1.1rem;
   }
 
-  /* Make the 'Select multiple' and related bulk actions buttons smaller */
   .library-actions button,
   .delete-multiple-btn {
     font-size: 0.85rem;
@@ -647,8 +649,6 @@
   color: #4b5563;
 }
 
-/* Re-apply mobile sizing after the base rule so it takes effect on small
-   screens even though the base h2 rule comes later in the file. */
 @media (max-width: 600px) {
   .library-card-main h2 {
     font-size: 0.9rem;
