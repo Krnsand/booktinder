@@ -155,8 +155,6 @@
   }
 }
 
-/* No extra desktop breakpoint needed: base size is large, and the
-   max-width: 1000px rule above shrinks them on smaller screens. */
 
 .bottom-nav {
   position: fixed;
@@ -173,7 +171,24 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
+@media (min-width: 700px) {
+  .bottom-nav {
+    gap: 6rem;
+  }
 
+  /* Make all icon buttons larger on bigger screens */
+  .icon-button,
+  .profile-icon-button {
+    width: 60px;
+    height: 60px;
+  }
+
+  /* Increase SVG icon size inside circular buttons */
+  .icon-button svg {
+    width: 28px;
+    height: 28px;
+  }
+}
 
 .discover-page,
 .book-detail-page {
@@ -189,7 +204,7 @@
 
 .filtration {
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 0 auto 6rem;
   padding: 0 15%;
   text-align: left;
 }
@@ -260,6 +275,27 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+@media (min-width: 700px) {
+  .filtration {
+    padding: 0 18%;
+  }
+
+  .filter-dropdown-toggle {
+    font-size: 2rem;
+    padding: 0.85rem 0;
+  }
+
+  .genre-item {
+    font-size: 1.2rem;
+  }
+
+  .genre-item input {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
 }
 
 .discover-current-book {
@@ -565,6 +601,23 @@
   margin-bottom: 4rem;
 }
 
+@media (min-width: 700px) {
+  .book-detail-info h1 {
+    font-size: 2.5rem;
+    text-shadow: #14102D 1px 1px 2px;
+}
+.book-detail-meta {
+  font-size: 1.4rem;
+}
+  .book-detail-description h2 {
+  font-size: 2.2rem;
+}
+
+.book-detail-description p {
+  font-size: 1.5rem;
+}
+}
+
 .profile-page {
   max-width: 600px;
   margin: 0 auto;
@@ -582,7 +635,7 @@
 }
 
 .profile-preference-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 6rem;
 }
 
 .profile-preference-group h3 {
