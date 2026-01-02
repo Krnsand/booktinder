@@ -1,7 +1,7 @@
 # Bookify
 En bokrekomendationsapp med enkelt och engegerande swipegränssnitt.
 
-![Responsive Mockup](https://github.com/Krnsand/island-adventure/blob/main/assets/images/responsive.png)
+![Responsive Mockup](https://github.com/Krnsand/booktinder/blob/main/src/assets/amIresponsive.png)
 
 [Live Website](https://bookify-lime-one.vercel.app/)
 
@@ -154,5 +154,8 @@ professionell och optimerad användarupplevelse med minimala laddningstider, tyd
 återkoppling vid alla användarinteraktioner samt vara testad för enhetlig funktion och
 design på flera enheter och webbläsare.
 
-![Lighthouse overall score](https://github.com/Krnsand/island-adventure/blob/main/assets/images/responsive.png)
-![WAVE results](https://github.com/Krnsand/island-adventure/blob/main/assets/images/responsive.png)
+![Lighthouse overall score](https://github.com/Krnsand/booktinder/blob/main/src/assets/Lighthouse.png)
+
+De sista procenten på Lighthouse är på grund av bildstorlekar på bokomslagen som hämtas från Google Books API, jag kan ej påverka dessa. Det är också en del nätverkstörningar som gör laddningarna långsammare.
+
+![WAVE results](https://github.com/Krnsand/booktinder/blob/main/src/assets/Wave.png)
